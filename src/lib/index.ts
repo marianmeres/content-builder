@@ -1,6 +1,10 @@
 // Reexport your entry components here
 
-export { default as ContentBuilder } from './content-builder/ContentBuilder.svelte';
+export {
+	default as ContentBuilder,
+	type ContentBuilderNodeValueTypesConfig,
+	type ContentBuilderTheme
+} from './content-builder/ContentBuilder.svelte';
 
 export { createContentBuilderStore } from './content-builder/content-builder.js';
 

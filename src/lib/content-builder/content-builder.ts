@@ -1,12 +1,24 @@
+import { createClog } from '@marianmeres/clog';
+import { createDerivedStore, createStore } from '@marianmeres/store';
 import { Tree, TreeNode, type TreeNodeDTO } from '@marianmeres/tree';
 import type { ContentBuilderNodeValue } from './types.js';
-import { createDerivedStore, createStore } from '@marianmeres/store';
-import { createClog } from '@marianmeres/clog';
+import { get as storeGet } from 'svelte/store';
 
 const clog = createClog('content-builder');
 
+const defaultNodeValue: ContentBuilderNodeValue = {
+	type: 'default',
+	label: '',
+	props: {
+		class: ''
+	},
+	// a.k.a. allow childred (but keepping the naming less technical)
+	allowInnerBlocks: true
+};
+
 export interface CreateContentBuilderStoreOptions {
 	save: (dump: string) => Promise<any>;
+	defaultNodeValue: ContentBuilderNodeValue;
 }
 
 export const createContentBuilderStore = (
@@ -14,10 +26,11 @@ export const createContentBuilderStore = (
 	options: Partial<CreateContentBuilderStoreOptions> = {}
 ) => {
 	let tree = new Tree<ContentBuilderNodeValue>(new TreeNode({ type: 'root' }));
+	clog('initialDump', initialDump);
 	if (initialDump) tree.restore(initialDump);
 
-	let _counter = tree.size() - 1;
-	const counter = () => ++_counter;
+	// let _counter = tree.size() - 1;
+	// const counter = () => tree.size() - 1;
 
 	const _ts = createStore<number>(0);
 	const _error = createStore<string>('');
@@ -32,7 +45,7 @@ export const createContentBuilderStore = (
 	const _derived = createDerivedStore<StoreVal>(
 		[_ts, _error, _isSaving],
 		// intentionally exposing only the dump (data), not the tree instance,
-		// we want to keep it encapsulated under the hood
+		// want to keep it encapsulated to have outer reactivity under control
 		([ts, error, isSaving]) => ({
 			size: tree.size(),
 			data: tree.toJSON(),
@@ -42,6 +55,7 @@ export const createContentBuilderStore = (
 	);
 
 	const _touch = () => _ts.set(Date.now());
+	const counter = () => storeGet(_derived).size;
 
 	const _save = async () => {
 		try {
@@ -59,11 +73,19 @@ export const createContentBuilderStore = (
 
 	// exposed API
 
-	const add = (parentKey: string | null, value: ContentBuilderNodeValue) => {
+	const add = (parentKey: string | null, value?: ContentBuilderNodeValue) => {
 		try {
 			_error.set(``);
 			const p = tree.find(parentKey || tree.root!.key);
 			if (p) {
+				// if (!value) {
+				value ??= { ...(options.defaultNodeValue || defaultNodeValue) };
+				// }
+				// if (!value.label) {
+				// clog(4444, value.label);
+				// value.label = [value.type, ' #', counter()].join('');
+				// }
+				value.label ||= `${value.type} #${counter()}`;
 				p.appendChild(value);
 				_touch();
 				_save();
@@ -79,7 +101,6 @@ export const createContentBuilderStore = (
 		try {
 			_error.set(``);
 			if (tree.remove(key)) {
-				_touch();
 				_save();
 			}
 		} catch (e) {
@@ -95,7 +116,6 @@ export const createContentBuilderStore = (
 			// clog(source?.deepClone());
 			// if (tree.insert(source?.parent?.key!, source?.deepClone().value)) {
 			if (tree.copy(source.key, source?.parent?.key!)) {
-				_touch();
 				_save();
 			}
 		} catch (e) {
@@ -114,7 +134,29 @@ export const createContentBuilderStore = (
 				clog('not same', targetIndex);
 				tree.move(srcKey, targetKey)?.moveSiblingIndex(targetIndex);
 			}
-			_touch();
+			_save();
+		} catch (e) {
+			_error.set(`${e}`);
+		}
+	};
+
+	const edit = (srcKey: string, valueData: string | ContentBuilderNodeValue) => {
+		try {
+			clog('edit', srcKey, valueData);
+			_error.set(``);
+			if (typeof valueData === 'string') {
+				try {
+					valueData = JSON.parse(valueData);
+				} catch (e) {
+					throw new TypeError('Invalid JSON data. Cannot edit.');
+				}
+			}
+			if (!valueData) return;
+
+			const node = tree.find(srcKey);
+			if (!node) throw new Error(`Node "${srcKey}" not found!`);
+			node.value = valueData as any;
+
 			_save();
 		} catch (e) {
 			_error.set(`${e}`);
@@ -128,6 +170,8 @@ export const createContentBuilderStore = (
 		move,
 		remove,
 		counter,
+		edit,
+		resetError: () => _error.set(''),
 		save: () => {
 			_touch();
 			_save();

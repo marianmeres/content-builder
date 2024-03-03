@@ -8,6 +8,7 @@
 
 	export let ariaLabel = '';
 	export let theme: Partial<ContentBuilderTheme>;
+	export let disabled = false;
 </script>
 
 <button
@@ -22,6 +23,7 @@
 	on:click
 	aria-label={ariaLabel}
 	use:tooltip
+	{disabled}
 >
 	<slot />
 </button>

@@ -11,17 +11,17 @@
 	export let index: number = 0;
 	export let id: string = '';
 	export let store: ReturnType<typeof createContentBuilderStore>;
+	export let disabled = false;
 
 	const isDraggedOver = writable<string | null>(null);
 
 	const tree = new Tree<ContentBuilderNodeValue>();
-
-	// $: clog(123, $store.data);
 </script>
 
 {#if id}
 	<div
 		use:droppable={{
+			enabled: !disabled,
 			id,
 			dropEffect: 'move',
 			onDrop: (data, e) => {
@@ -38,7 +38,6 @@
 
 				// dragging under same parent needs some adjusting
 				if (src?.parent === target) {
-					// console.log('src', src?.siblingIndex, targetIndex);
 					// dropped to top (special case -1 mark)
 					if (targetIndex === -1) {
 						targetIndex = 0;
@@ -47,18 +46,13 @@
 					else if (src?.siblingIndex > targetIndex) {
 						targetIndex++;
 					}
-					// console.log('final', src?.siblingIndex, targetIndex);
 				}
 				// not under same parent
 				else {
 					targetIndex++;
 				}
 
-				// if (targetIndex === -1) {
-				// 	targetIndex = 0;
-				// }
-
-				console.log('final', src?.siblingIndex, targetIndex);
+				// console.log('final', src?.siblingIndex, targetIndex);
 				store.move(sourceKey, targetKey, targetIndex);
 			},
 			isDraggedOver

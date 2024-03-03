@@ -3,5 +3,5 @@ export interface ContentBuilderNodeValue {
 	label?: string;
 	html?: string;
 	props?: Record<string, any>;
-	allowChildren?: boolean;
+	allowInnerBlocks?: boolean;
 }

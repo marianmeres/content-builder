@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { Button } from '@marianmeres/stuic';
-	import {
-		ContentBuilder,
-		createContentBuilderStore,
-		type ContentBuilderNodeValue
-	} from '../lib/index.js';
-	import type { TreeNodeDTO } from '@marianmeres/tree';
 	import { createClog } from '@marianmeres/clog';
+	import {
+		AlertConfirmPrompt,
+		Button,
+		createAlertConfirmPromptStore
+	} from '@marianmeres/stuic';
+	import { ContentBuilder, createContentBuilderStore } from '../lib/index.js';
 	import FooNodeType from './_components/FooNodeType.svelte';
 
 	const clog = createClog('+page');
@@ -17,6 +16,7 @@
 
 	const store = createContentBuilderStore(storage()?.getItem('dump'), {
 		save: async (dump: string) => {
+			// simulate async server request...
 			return new Promise((resolve) => {
 				setTimeout(() => {
 					storage()?.setItem('dump', dump);
@@ -26,39 +26,32 @@
 		}
 	});
 
-	const nodeTypesConfig = {
-		// foo: {
-		// 	component: FooNodeType,
-		// 	props: { class: 'text-red-500' }
-		// }
+	const acp = createAlertConfirmPromptStore();
+
+	// just as an example right now..
+	const nodeValueByTypeConfig = {
+		foo: {
+			component: FooNodeType,
+			props: { class: 'text-red-500' }
+		}
 	};
 
-	//
-	// $: clog($store);
+	let disabled = false;
 </script>
 
 <div class="p-4 space-x-4">
-	<ContentBuilder {store} {nodeTypesConfig} />
-
-	<!-- {#if $store.size > 1} -->
-	<!--  -->
-	<!-- {:else} -->
-
-	<!-- {/if} -->
+	<ContentBuilder {store} {nodeValueByTypeConfig} {disabled} {acp} />
 </div>
-<div class="pt-2 border-t">
-	<Button
-		on:click={() => {
-			store.add(null, {
-				type: 'html',
-				label: `html #${store.counter()}`,
-				allowChildren: true
-			});
-		}}
-	>
-		click
-	</Button>
+<div class="p-4 border-t space-x-4">
+	<Button on:click={() => store.add(null)} size="sm" {disabled}>Append block</Button>
+	<label class="inline-flex items-center space-x-2">
+		<input type="checkbox" bind:checked={disabled} />
+		<span>disabled</span>
+	</label>
+	<span>Blocks: {$store.size - 1}</span>
 	{#if $store?.isSaving}
-		<div>Saving...</div>
+		<span class="opacity-25">Saving...</span>
 	{/if}
 </div>
+
+<AlertConfirmPrompt {acp} />

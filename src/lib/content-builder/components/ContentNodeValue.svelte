@@ -1,43 +1,49 @@
 <script lang="ts">
-	import { Thc } from '@marianmeres/stuic';
 	import { createClog } from '@marianmeres/clog';
+	import { Thc } from '@marianmeres/stuic';
 	import type { ContentBuilderNodeValueTypesConfig } from '../ContentBuilder.svelte';
 	import type { createContentBuilderStore } from '../content-builder.js';
 	import type { ContentBuilderNodeValue } from '../types.js';
-	import { iconFeatherEdit } from '@marianmeres/icons-fns';
 
 	const clog = createClog('ContentNodeValue');
 
-	export let nodeTypesConfig: ContentBuilderNodeValueTypesConfig;
+	export let nodeValueByTypeConfig: ContentBuilderNodeValueTypesConfig;
 	export let value: ContentBuilderNodeValue;
 	export let key: string;
 	export let store: ReturnType<typeof createContentBuilderStore>;
-
+	export let disabled = false;
 	let input: HTMLInputElement;
 
-	const submitLabel = (e: Event) => store.save();
+	//
+	let _previousLabel = value.label;
+	const submitLabel = (e: Event) => {
+		if (_previousLabel !== value.label) {
+			store.save();
+			_previousLabel = value.label;
+		}
+	};
 </script>
 
-<!-- <div> -->
-{#if nodeTypesConfig?.[value.type]?.component}
+{#if nodeValueByTypeConfig?.[value.type]?.component}
 	<Thc
 		thc={{
-			component: nodeTypesConfig?.[value.type]?.component,
+			component: nodeValueByTypeConfig?.[value.type]?.component,
 			props: {
-				...(nodeTypesConfig?.[value.type]?.props || {}),
+				...(nodeValueByTypeConfig?.[value.type]?.props || {}),
 				...(value.props || {}),
 				key,
-				value
+				value,
+				disabled
 			}
 		}}
 	/>
 {:else}
-	<!-- <ContentNodePreview {key} {value} {nodeTypesConfig} {store} /> -->
 	<div class="flex items-center">
-		<div class="flex-1">
+		<div class="flex-1 pr-2">
 			<input
 				type="text"
-				class="w-full focus:outline-none focus:bg-gray-100"
+				class="w-full focus:outline-none focus:bg-gray-100 hover:bg-gray-100"
+				class:cursor-not-allowed={disabled}
 				bind:this={input}
 				bind:value={value.label}
 				on:blur={submitLabel}
@@ -47,6 +53,7 @@
 						submitLabel(e);
 					}
 				}}
+				{disabled}
 			/>
 		</div>
 		<span
@@ -54,10 +61,7 @@
 				text-xs font-mono rounded-full p-1 px-2 bg-gray-200
 			"
 		>
-			<!-- {@html iconFeatherEdit({ size: 14, class: 'opacity-50' })} -->
-			<!-- <span class="opacity-25">[{key}]</span> -->
-			<span class="opacity-80">{value.type}</span>
+			<span class="opacity-75">{value.type}</span>
 		</span>
 	</div>
 {/if}
-<!-- </div> -->

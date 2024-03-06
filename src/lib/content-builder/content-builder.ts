@@ -1,16 +1,14 @@
-import { createClog } from '@marianmeres/clog';
 import { createDerivedStore, createStore } from '@marianmeres/store';
 import { Tree, TreeNode, type TreeNodeDTO } from '@marianmeres/tree';
-import type { ContentBuilderNodeValue } from './types.js';
 import { get as storeGet } from 'svelte/store';
-
-const clog = createClog('content-builder');
+import type { ContentBuilderNodeValue } from './types.js';
 
 const defaultNodeValue: ContentBuilderNodeValue = {
 	type: 'default',
 	label: '',
 	props: {
-		class: ''
+		html: '',
+		style: ''
 	},
 	// a.k.a. allow childred (but keepping the naming less technical)
 	allowInnerBlocks: true
@@ -19,14 +17,16 @@ const defaultNodeValue: ContentBuilderNodeValue = {
 export interface CreateContentBuilderStoreOptions {
 	save: (dump: string) => Promise<any>;
 	defaultNodeValue: ContentBuilderNodeValue;
+	logger?: (...args: any[]) => void;
 }
 
 export const createContentBuilderStore = (
 	initialDump: string | null = null,
 	options: Partial<CreateContentBuilderStoreOptions> = {}
 ) => {
-	let tree = new Tree<ContentBuilderNodeValue>(new TreeNode({ type: 'root' }));
-	clog('initialDump', initialDump);
+	const _log = (...args: any[]) => options.logger?.apply(null, args);
+	let tree = new Tree<ContentBuilderNodeValue>(new TreeNode({ type: '__root__' }));
+	_log('initialDump', initialDump);
 	if (initialDump) tree.restore(initialDump);
 
 	// let _counter = tree.size() - 1;
@@ -78,13 +78,7 @@ export const createContentBuilderStore = (
 			_error.set(``);
 			const p = tree.find(parentKey || tree.root!.key);
 			if (p) {
-				// if (!value) {
 				value ??= { ...(options.defaultNodeValue || defaultNodeValue) };
-				// }
-				// if (!value.label) {
-				// clog(4444, value.label);
-				// value.label = [value.type, ' #', counter()].join('');
-				// }
 				value.label ||= `${value.type} #${counter()}`;
 				p.appendChild(value);
 				_touch();
@@ -113,8 +107,6 @@ export const createContentBuilderStore = (
 			_error.set(``);
 			const source = tree.find(key);
 			if (!source) throw new Error(`Source node (key "${key}") not found`);
-			// clog(source?.deepClone());
-			// if (tree.insert(source?.parent?.key!, source?.deepClone().value)) {
 			if (tree.copy(source.key, source?.parent?.key!)) {
 				_save();
 			}
@@ -125,13 +117,13 @@ export const createContentBuilderStore = (
 
 	const move = (srcKey: string, targetKey: string, targetIndex: number = 0) => {
 		try {
-			clog('move', srcKey, targetKey, targetIndex);
+			_log('move', srcKey, targetKey, targetIndex);
 			_error.set(``);
 			if (srcKey === targetKey) {
-				clog('same', targetIndex);
+				// _log('same', targetIndex);
 				tree.find(srcKey)?.moveSiblingIndex(targetIndex);
 			} else {
-				clog('not same', targetIndex);
+				// _log('not same', targetIndex);
 				tree.move(srcKey, targetKey)?.moveSiblingIndex(targetIndex);
 			}
 			_save();
@@ -142,7 +134,7 @@ export const createContentBuilderStore = (
 
 	const edit = (srcKey: string, valueData: string | ContentBuilderNodeValue) => {
 		try {
-			clog('edit', srcKey, valueData);
+			_log('edit', srcKey, valueData);
 			_error.set(``);
 			if (typeof valueData === 'string') {
 				try {

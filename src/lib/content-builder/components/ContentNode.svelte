@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { createClog } from '@marianmeres/clog';
 	import {
-		iconFeatherCopy,
-		iconFeatherFolderPlus,
-		iconFeatherTrash2,
 		iconBsGripVertical,
-		iconFeatherEdit
+		iconFeatherCopy,
+		iconFeatherEdit,
+		iconFeatherFolderPlus,
+		iconFeatherTrash2
 	} from '@marianmeres/icons-fns';
 	import {
 		createAlertConfirmPromptStore,
 		createConfirm,
-		createPrompt,
 		draggable,
-		droppable
+		droppable,
+		tooltip
 	} from '@marianmeres/stuic';
 	import { Tree, type TreeNode } from '@marianmeres/tree';
+	import { createEventDispatcher } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { twMerge } from 'tailwind-merge';
 	import type {
@@ -26,7 +27,6 @@
 	import ContentNodeDropzone from './ContentNodeDropzone.svelte';
 	import ContentNodeValue from './ContentNodeValue.svelte';
 	import ControlButton from './ControlButton.svelte';
-	import { createEventDispatcher } from 'svelte';
 
 	const clog = createClog('ContentNode');
 	const dispatch = createEventDispatcher();
@@ -37,9 +37,13 @@
 	export let hoveredKeys = writable<string[]>([]);
 	export let t: CallableFunction;
 	export let theme: Partial<ContentBuilderTheme>;
-	export let nodeValueByTypeConfig: ContentBuilderNodeValueTypesConfig;
 	export let disabled = false;
 	export let acp: null | ReturnType<typeof createAlertConfirmPromptStore> = null;
+
+	export let onNodeEditRequest: (
+		key: string,
+		value: ContentBuilderNodeValue
+	) => Promise<void>;
 
 	// for debug
 	export let showNodeId = false;
@@ -76,8 +80,8 @@
 					`select-none relative`,
 					theme?.li || '',
 					isHovered ? 'border-solid' : 'border-dashed',
-					isHovered ? theme?.li_hi || 'border-black' : theme?.li_low || 'border-gray-400',
-					`border relative block`,
+					isHovered ? theme?.li_hi || 'border-black' : theme?.li_low || 'border-gray-300',
+					`border-[3px] rounded-t rounded-l relative block`,
 					$isDraggedOver === id && ' border-black border-solid'
 				)}
 				on:pointerenter={() => onHover(n)}
@@ -103,7 +107,7 @@
 						onDrop: (data, e) => {
 							const sourceKey = data.payload?.source;
 							const targetKey = id;
-							clog('onDrop', { sourceKey, targetKey });
+							// clog('onDrop', { sourceKey, targetKey });
 							// @ts-ignore
 							tree.restore($store.data);
 							const src = tree.find(sourceKey);
@@ -120,6 +124,8 @@
 						<div
 							class="flex flex-col justify-center p-0 opacity-40"
 							class:hidden={disabled}
+							aria-label={t('drag_to_reorder')}
+							use:tooltip
 						>
 							{@html iconBsGripVertical({ size: 21 })}
 						</div>
@@ -127,11 +133,11 @@
 						<div class="flex-1 p-2">
 							<ContentNodeValue
 								value={n.value}
-								{nodeValueByTypeConfig}
 								key={n.key}
 								{store}
 								{disabled}
 								{showNodeId}
+								{onNodeEditRequest}
 							/>
 						</div>
 					</div>
@@ -143,11 +149,10 @@
 							{hoveredKeys}
 							{t}
 							{theme}
-							{nodeValueByTypeConfig}
 							{disabled}
 							{acp}
 							{showNodeId}
-							on:edit_request
+							{onNodeEditRequest}
 						/>
 					{/if}
 				</div>
@@ -156,7 +161,7 @@
 					<div
 						class={twMerge(`
 						absolute leading-none
-						top-[100%] -right-[1px] z-10
+						top-[100%] -right-[2px] z-10
 						bg-black
 						${theme?.hover_control?.box || ''}
 						rounded-b
@@ -167,28 +172,7 @@
 							<ControlButton
 								class="rounded-bl"
 								ariaLabel={t('node_edit')}
-								on:click={async () => {
-									if (!acp) {
-										clog.warn('acp instance not found, dispatching "edit_request"');
-										dispatch('edit_request', { key: n.key, value: n.value });
-									} else {
-										store.resetError();
-										const valueData = await createPrompt(acp)(
-											'Valid JSON format is required.',
-											JSON.stringify(n.value, null, 2),
-											{
-												promptFieldProps: {
-													type: 'textarea',
-													class: { input: 'font-mono' }
-												},
-												iconFn: false,
-												title: 'Content block raw editor'
-											}
-										);
-										// @ts-ignore
-										store.edit(n.key, valueData);
-									}
-								}}
+								on:click={async () => onNodeEditRequest(n.key, n.value)}
 								{theme}
 								{disabled}
 							>

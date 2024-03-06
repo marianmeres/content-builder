@@ -7,13 +7,16 @@
 
 	const clog = createClog('ContentNodeValue');
 
-	export let nodeValueByTypeConfig: ContentBuilderNodeValueTypesConfig;
 	export let value: ContentBuilderNodeValue;
 	export let key: string;
 	export let store: ReturnType<typeof createContentBuilderStore>;
 	export let disabled = false;
 	// for debug
 	export let showNodeId = false;
+	export let onNodeEditRequest: (
+		key: string,
+		value: ContentBuilderNodeValue
+	) => Promise<void>;
 
 	let input: HTMLInputElement;
 
@@ -27,47 +30,33 @@
 	};
 </script>
 
-{#if nodeValueByTypeConfig?.[value.type]?.component}
-	<Thc
-		thc={{
-			component: nodeValueByTypeConfig?.[value.type]?.component,
-			props: {
-				...(nodeValueByTypeConfig?.[value.type]?.props || {}),
-				...(value.props || {}),
-				key,
-				value,
-				disabled
-			}
-		}}
-	/>
-{:else}
-	<div class="flex items-center">
-		<div class="flex-1 pr-2">
-			<input
-				type="text"
-				class="w-full focus:outline-none focus:bg-gray-100 hover:bg-gray-100"
-				class:cursor-not-allowed={disabled}
-				bind:this={input}
-				bind:value={value.label}
-				on:blur={submitLabel}
-				on:keydown={(e) => {
-					if (e.key === 'Enter') {
-						input.blur();
-						submitLabel(e);
-					}
-				}}
-				{disabled}
-			/>
-		</div>
-		{#if showNodeId}
-			<span class="text-xs font-mono opacity-50 mr-2">{key}</span>
-		{/if}
-		<span
-			class="
-				text-xs font-mono rounded-full p-1 px-2 bg-gray-200
-			"
-		>
-			<span class="opacity-75">{value.type}</span>
-		</span>
+<div class="flex items-center">
+	<div class="flex-1 pr-2">
+		<input
+			type="text"
+			class="w-full focus:outline-none focus:bg-gray-100 hover:bg-gray-50"
+			class:cursor-not-allowed={disabled}
+			bind:this={input}
+			bind:value={value.label}
+			on:blur={submitLabel}
+			on:keydown={(e) => {
+				if (e.key === 'Enter') {
+					input.blur();
+					submitLabel(e);
+				}
+			}}
+			{disabled}
+		/>
 	</div>
-{/if}
+	{#if showNodeId}
+		<span class="text-xs font-mono opacity-50 mr-2">{key}</span>
+	{/if}
+	<button
+		class="
+				text-xs font-mono rounded-full p-1 px-2 bg-gray-100
+			"
+		on:click={async () => onNodeEditRequest(key, value)}
+	>
+		<span class="opacity-75">{value.type}</span>
+	</button>
+</div>

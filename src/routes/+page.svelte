@@ -5,8 +5,16 @@
 		Button,
 		createAlertConfirmPromptStore
 	} from '@marianmeres/stuic';
-	import { ContentBuilder, createContentBuilderStore } from '../lib/index.js';
-	import FooNodeType from './_components/FooNodeType.svelte';
+	import {
+		ContentBuilder,
+		createContentBuilderStore,
+		type ContentBuilderNodeValue
+	} from '../lib/index.js';
+	import ContentBuilderNodeRenderer, {
+		type ContentBuilderRendererComponentDef
+	} from '../lib/content-builder/ContentBuilderNodeRenderer.svelte';
+	import { Tree } from '@marianmeres/tree';
+	import Foo from './_components/Foo.svelte';
 
 	const clog = createClog('+page');
 
@@ -23,24 +31,28 @@
 					resolve(true);
 				}, 1_000);
 			});
-		}
+		},
+		logger: clog
 	});
 
 	const acp = createAlertConfirmPromptStore();
 
-	// just as an example...
-	const nodeValueByTypeConfig = {
-		foo: {
-			component: FooNodeType,
-			props: { class: 'text-red-500' }
-		}
-	};
+	$: tree = Tree.factory<ContentBuilderNodeValue>($store.data || '', true);
 
 	let disabled = false;
+
+	const typeToComponentMap: Record<string, ContentBuilderRendererComponentDef> = {
+		foo: {
+			component: Foo,
+			props: {
+				foo: 'must be overwritten 2'
+			}
+		}
+	};
 </script>
 
 <div class="p-4 space-x-4">
-	<ContentBuilder {store} {nodeValueByTypeConfig} {disabled} {acp} debug />
+	<ContentBuilder {store} {disabled} {acp} debug />
 </div>
 <div class="p-4 border-t space-x-4">
 	<Button on:click={() => store.add(null)} size="sm" {disabled}>Append block</Button>
@@ -53,5 +65,11 @@
 		<span class="opacity-25">Saving...</span>
 	{/if}
 </div>
+
+{#if tree.size() > 1}
+	<div class="p-4 bg-gray-50">
+		<ContentBuilderNodeRenderer node={tree.root} {typeToComponentMap} />
+	</div>
+{/if}
 
 <AlertConfirmPrompt {acp} />

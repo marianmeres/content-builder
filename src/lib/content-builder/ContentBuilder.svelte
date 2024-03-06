@@ -1,8 +1,9 @@
 <script lang="ts" context="module">
 	import { createClog } from '@marianmeres/clog';
 	import { iconFeatherHelpCircle } from '@marianmeres/icons-fns';
-	import type { createAlertConfirmPromptStore } from '@marianmeres/stuic';
+	import { createPrompt, type createAlertConfirmPromptStore } from '@marianmeres/stuic';
 	import { Tree } from '@marianmeres/tree';
+	import { createEventDispatcher } from 'svelte';
 	import { twMerge } from 'tailwind-merge';
 	import ContentNode from './components/ContentNode.svelte';
 	import { createContentBuilderStore } from './content-builder.js';
@@ -35,7 +36,7 @@
 	export let store: ReturnType<typeof createContentBuilderStore>;
 
 	export let i18n: Record<string, string> = {
-		instructions: 'Edit label and use hover control buttons for more. Drag to reorder.',
+		instructions: 'Edit label and use hover control buttons for more. Drag to move.',
 		empty: 'Empty content.',
 		node_remove: 'Remove this content block',
 		node_remove_confirm_title: 'Are you sure?',
@@ -45,7 +46,8 @@
 		].join(' '),
 		node_add: 'Add new content block inside this block',
 		node_duplicate: 'Duplicate this content block',
-		node_edit: 'Edit this content block'
+		node_edit: 'Edit this content block',
+		drag_to_reorder: 'Drag to move'
 	};
 
 	export let theme: Partial<ContentBuilderTheme> = {};
@@ -59,6 +61,40 @@
 	};
 
 	export let disabled = false;
+
+	//
+	const defaultOnNodeEdit = async (key: string, value: ContentBuilderNodeValue) => {
+		if (!acp) {
+			console.warn(
+				'Default `defaultOnNodeEdit` is a no-op, because `acp` instance was not provided.'
+			);
+		} else {
+			store.resetError();
+			const valueData = await createPrompt(acp)(
+				'Valid JSON format is required.',
+				JSON.stringify(value, null, 2),
+				{
+					promptFieldProps: { type: 'textarea', class: { input: 'font-mono' } },
+					iconFn: false,
+					title: {
+						html: [
+							`<span class="flex items-center justify-between">`,
+							`<span>Content block raw editor</span>`,
+							`<code class="text-xs opacity-50 font-normal">${key}</code>`,
+							`</span>`
+						].join(' ')
+					}
+				}
+			);
+			// @ts-ignore
+			store.edit(key, valueData);
+		}
+	};
+
+	export let onNodeEditRequest: (
+		key: string,
+		value: ContentBuilderNodeValue
+	) => Promise<void> = defaultOnNodeEdit;
 
 	export let debug = false;
 
@@ -77,10 +113,9 @@
 				{store}
 				{t}
 				{theme}
-				{nodeValueByTypeConfig}
 				{disabled}
 				{acp}
-				on:edit_request
+				{onNodeEditRequest}
 				showNodeId={debug}
 			/>
 		{:else}

@@ -28,7 +28,7 @@
 				const sourceKey = data.payload?.source;
 				const targetKey = id;
 				let targetIndex = index;
-				clog('onDrop', { sourceKey, targetKey, targetIndex });
+				// clog('onDrop', { sourceKey, targetKey, targetIndex });
 
 				// @ts-ignore
 				tree.restore($store.data);
@@ -59,7 +59,8 @@
 			// logger: createClog('droppable')
 		}}
 		class:bg-black={$isDraggedOver === id}
-		class:h-3={$isDraggedOver !== id}
+		class:h-2={$isDraggedOver !== id && index === -1}
+		class:h-3={$isDraggedOver !== id && index !== -1}
 		class:h-6={$isDraggedOver === id}
 	/>
 {/if}

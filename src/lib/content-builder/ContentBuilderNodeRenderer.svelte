@@ -6,7 +6,6 @@
 </script>
 
 <script lang="ts">
-	import { createClog } from '@marianmeres/clog';
 	import type { TreeNode } from '@marianmeres/tree';
 	import Default from './components/renderer/Default.svelte';
 	import type { ContentBuilderNodeValue } from './types.js';
@@ -34,12 +33,9 @@
 	</div>
 {:else if node}
 	{@const cmp = getCmp(node.key, node.value)}
-	<!-- {#key node.key} -->
-	<!-- {node.key} -->
 	<svelte:component this={cmp.component} {...cmp?.props || {}}>
 		{#each node?.children || [] as child}
 			<svelte:self node={child} {typeToComponentMap} />
 		{/each}
 	</svelte:component>
-	<!-- {/key} -->
 {/if}

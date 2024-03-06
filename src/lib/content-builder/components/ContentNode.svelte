@@ -11,9 +11,10 @@
 		createAlertConfirmPromptStore,
 		createConfirm,
 		createPrompt,
-		draggable
+		draggable,
+		droppable
 	} from '@marianmeres/stuic';
-	import type { TreeNode } from '@marianmeres/tree';
+	import { Tree, type TreeNode } from '@marianmeres/tree';
 	import { writable } from 'svelte/store';
 	import { twMerge } from 'tailwind-merge';
 	import type {
@@ -40,6 +41,9 @@
 	export let disabled = false;
 	export let acp: null | ReturnType<typeof createAlertConfirmPromptStore> = null;
 
+	// for debug
+	export let showNodeId = false;
+
 	const onHover = (n: TreeNode<ContentBuilderNodeValue>) => {
 		$hoveredKeys = [...$hoveredKeys, n.key];
 	};
@@ -49,7 +53,10 @@
 	};
 
 	const isDragged = writable<string | null>(null);
+	const isDraggedOver = writable<string | null>(null);
+	const tree = new Tree<ContentBuilderNodeValue>();
 
+	// $: clog($isDraggedOver);
 	// $: clog('node', node.key, node.depth);
 	// $: clog($isDragged);
 </script>
@@ -66,18 +73,17 @@
 			<li
 				class:mx-8={!node.isRoot}
 				class={twMerge(
-					`select-none`,
+					`select-none relative`,
 					theme?.li || '',
 					isHovered ? 'border-solid' : 'border-dashed',
 					isHovered ? theme?.li_hi || 'border-black' : theme?.li_low || 'border-gray-400',
-					`border relative block`
+					`border relative block`,
+					$isDraggedOver === id && ' border-black border-solid'
 				)}
-				class:border-solid={isHovered}
 				on:pointerenter={() => onHover(n)}
 				on:pointerleave={() => onHoverOut(n)}
 				role="group"
 			>
-				<!-- class:opacity-25={$isDragged?.[id]} -->
 				<div
 					use:draggable={{
 						enabled: !disabled && isHovered,
@@ -90,6 +96,25 @@
 					class:cursor-grab={!disabled && $isDragged !== id}
 					class:cursor-grabbing={!disabled && $isDragged === id}
 					class:bg-gray-300={!disabled && $isDragged === id}
+					use:droppable={{
+						// this droppable only handles first child
+						enabled: !!(n.value.allowInnerBlocks && !n.children?.length),
+						id,
+						onDrop: (data, e) => {
+							const sourceKey = data.payload?.source;
+							const targetKey = id;
+							clog('onDrop', { sourceKey, targetKey });
+							// @ts-ignore
+							tree.restore($store.data);
+							const src = tree.find(sourceKey);
+							const target = tree.find(targetKey);
+							// sanity check
+							if (src && target && src !== target) {
+								store.move(sourceKey, targetKey);
+							}
+						},
+						isDraggedOver
+					}}
 				>
 					<div class="flex w-full">
 						<div
@@ -106,14 +131,9 @@
 								key={n.key}
 								{store}
 								{disabled}
+								{showNodeId}
 							/>
 						</div>
-						<!-- <div
-							class="flex flex-col justify-center p-0 opacity-40"
-							class:hidden={disabled}
-						>
-							{@html iconBsGripVertical({ size: 21 })}
-						</div> -->
 					</div>
 
 					{#if n.children?.length}
@@ -126,6 +146,7 @@
 							{nodeValueByTypeConfig}
 							{disabled}
 							{acp}
+							{showNodeId}
 							on:edit_request
 						/>
 					{/if}
@@ -196,7 +217,7 @@
 								class="rounded-br"
 								on:click={async () => {
 									const c = acp
-										? createConfirm(acp, { title: 'Are you sure?' })
+										? createConfirm(acp, { title: t('node_remove_confirm_title') })
 										: confirm;
 									if (await c(t('node_remove_confirm'))) {
 										store.remove(n.key);
@@ -209,19 +230,11 @@
 							</ControlButton>
 						</div>
 					</div>
-					<!-- <ContentNodeDropzone {id} /> -->
-					<!-- <ContentNodeDropzone {id} {store} index={index + 1} /> -->
 				{/if}
 			</li>
 			<li>
-				<!-- <ContentNodeDropzone id={node.parent?.key || node.key} {store} {index} /> -->
 				<ContentNodeDropzone id={node.key} {store} {index} {disabled} />
 			</li>
 		{/each}
-		<!-- {#if node.isRoot}
-			<li>
-				<ContentNodeDropzone id={node.key} {store} index={Number.MAX_SAFE_INTEGER} />
-			</li>
-		{/if} -->
 	</ol>
 {/if}

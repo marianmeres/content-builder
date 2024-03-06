@@ -60,6 +60,8 @@
 
 	export let disabled = false;
 
+	export let debug = false;
+
 	// this is a readonly tree!
 	$: tree = Tree.factory<ContentBuilderNodeValue>($store.data || '', true);
 </script>
@@ -79,6 +81,7 @@
 				{disabled}
 				{acp}
 				on:edit_request
+				showNodeId={debug}
 			/>
 		{:else}
 			<div class="text-sm opacity-50 text-center">{@html t('empty')}</div>

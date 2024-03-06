@@ -28,7 +28,7 @@
 
 	const acp = createAlertConfirmPromptStore();
 
-	// just as an example right now..
+	// just as an example...
 	const nodeValueByTypeConfig = {
 		foo: {
 			component: FooNodeType,
@@ -40,7 +40,7 @@
 </script>
 
 <div class="p-4 space-x-4">
-	<ContentBuilder {store} {nodeValueByTypeConfig} {disabled} {acp} />
+	<ContentBuilder {store} {nodeValueByTypeConfig} {disabled} {acp} debug />
 </div>
 <div class="p-4 border-t space-x-4">
 	<Button on:click={() => store.add(null)} size="sm" {disabled}>Append block</Button>

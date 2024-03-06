@@ -12,6 +12,9 @@
 	export let key: string;
 	export let store: ReturnType<typeof createContentBuilderStore>;
 	export let disabled = false;
+	// for debug
+	export let showNodeId = false;
+
 	let input: HTMLInputElement;
 
 	//
@@ -56,6 +59,9 @@
 				{disabled}
 			/>
 		</div>
+		{#if showNodeId}
+			<span class="text-xs font-mono opacity-50 mr-2">{key}</span>
+		{/if}
 		<span
 			class="
 				text-xs font-mono rounded-full p-1 px-2 bg-gray-200

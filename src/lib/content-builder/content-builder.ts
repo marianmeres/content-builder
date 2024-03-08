@@ -155,6 +155,11 @@ export const createContentBuilderStore = (
 		}
 	};
 
+	const save = () => {
+		_touch();
+		_save();
+	};
+
 	return {
 		subscribe: _derived.subscribe,
 		add,
@@ -164,9 +169,10 @@ export const createContentBuilderStore = (
 		counter,
 		edit,
 		resetError: () => _error.set(''),
-		save: () => {
-			_touch();
-			_save();
+		save,
+		restore: (dump: string) => {
+			tree.restore(dump);
+			save();
 		}
 	};
 };

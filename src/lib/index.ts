@@ -11,6 +11,10 @@ export {
 	type ContentBuilderRendererComponentDef
 } from './content-builder/ContentBuilderNodeRenderer.svelte';
 
-export { createContentBuilderStore } from './content-builder/content-builder.js';
+export {
+	createContentBuilderStore,
+	type ContentBuilderStoreVal,
+	type ContentBuilderStore
+} from './content-builder/content-builder.js';
 
 export type { ContentBuilderNodeValue } from './content-builder/types.js';

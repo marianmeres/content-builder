@@ -1,4 +1,4 @@
-import { createDerivedStore, createStore } from '@marianmeres/store';
+import { createDerivedStore, createStore, type StoreReadable } from '@marianmeres/store';
 import { Tree, TreeNode, type TreeNodeDTO } from '@marianmeres/tree';
 import { get as storeGet } from 'svelte/store';
 import type { ContentBuilderNodeValue } from './types.js';
@@ -20,10 +20,33 @@ export interface CreateContentBuilderStoreOptions {
 	logger?: (...args: any[]) => void;
 }
 
+// export interface PagingStore extends StoreReadable<PagingCalcResult> {
+// 	update: (pagingData: Partial<PagingData>) => void;
+// 	reset: (limit?) => void;
+// }
+
+export interface ContentBuilderStoreVal {
+	size: number;
+	data: TreeNodeDTO<ContentBuilderNodeValue> | undefined;
+	error: string;
+	isSaving: boolean;
+}
+
+export interface ContentBuilderStore extends StoreReadable<ContentBuilderStoreVal> {
+	add: (parentKey: string | null, value?: ContentBuilderNodeValue) => void;
+	duplicate: (key: string) => void;
+	move: (srcKey: string, targetKey: string, targetIndex: number) => void;
+	remove: (key: string) => void;
+	edit: (srcKey: string, valueData: string | ContentBuilderNodeValue) => void;
+	resetError: () => void;
+	save: () => void;
+	restore: (dump: string) => void;
+}
+
 export const createContentBuilderStore = (
 	initialDump: string | null = null,
 	options: Partial<CreateContentBuilderStoreOptions> = {}
-) => {
+): ContentBuilderStore => {
 	const _log = (...args: any[]) => options.logger?.apply(null, args);
 	let tree = new Tree<ContentBuilderNodeValue>(new TreeNode({ type: '__root__' }));
 	_log('initialDump', initialDump);
@@ -36,13 +59,7 @@ export const createContentBuilderStore = (
 	const _error = createStore<string>('');
 	const _isSaving = createStore<boolean>(false);
 
-	interface StoreVal {
-		size: number;
-		data: TreeNodeDTO<ContentBuilderNodeValue> | undefined;
-		error: string;
-		isSaving: boolean;
-	}
-	const _derived = createDerivedStore<StoreVal>(
+	const _derived = createDerivedStore<ContentBuilderStoreVal>(
 		[_ts, _error, _isSaving],
 		// intentionally exposing only the dump (data), not the tree instance,
 		// want to keep it encapsulated to have outer reactivity under control
@@ -55,7 +72,7 @@ export const createContentBuilderStore = (
 	);
 
 	const _touch = () => _ts.set(Date.now());
-	const counter = () => storeGet(_derived).size;
+	const _counter = () => storeGet(_derived).size;
 
 	const _save = async () => {
 		try {
@@ -79,7 +96,7 @@ export const createContentBuilderStore = (
 			const p = tree.find(parentKey || tree.root!.key);
 			if (p) {
 				value ??= { ...(options.defaultNodeValue || defaultNodeValue) };
-				value.label ||= `${value.type} #${counter()}`;
+				value.label ||= `${value.type} #${_counter()}`;
 				p.appendChild(value);
 				_touch();
 				_save();
@@ -162,11 +179,11 @@ export const createContentBuilderStore = (
 
 	return {
 		subscribe: _derived.subscribe,
+		get: _derived.get,
 		add,
 		duplicate,
 		move,
 		remove,
-		counter,
 		edit,
 		resetError: () => _error.set(''),
 		save,

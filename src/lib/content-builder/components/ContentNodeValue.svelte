@@ -36,8 +36,9 @@
 			type="text"
 			class="
 				w-full
-				focus:outline-none focus:bg-gray-100 hover:bg-gray-50
+				focus:outline-none focus:bg-gray-100 hover:bg-gray-50 focus:border-none focus:ring-0
 				border-none p-0 text-base
+				ring-0
 			"
 			class:cursor-not-allowed={disabled}
 			bind:this={input}

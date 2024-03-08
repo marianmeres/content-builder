@@ -51,9 +51,15 @@
 	};
 </script>
 
-<div class="p-4 space-x-4">
+<div class="p-6">
 	<ContentBuilder {store} {disabled} {acp} debug />
 </div>
+{#if $store.size > 1}
+	<div class="text-xs opacity-50 px-6 mb-4">
+		Edit label and use hover control buttons for more. Drag to move.
+	</div>
+{/if}
+
 <div class="p-4 border-t space-x-4">
 	<Button on:click={() => store.add(null)} size="sm" {disabled}>Append block</Button>
 	<label class="inline-flex items-center space-x-2">

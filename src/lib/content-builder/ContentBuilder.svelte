@@ -36,7 +36,7 @@
 	export let store: ReturnType<typeof createContentBuilderStore>;
 
 	export let i18n: Record<string, string> = {
-		instructions: 'Edit label and use hover control buttons for more. Drag to move.',
+		// instructions: 'Edit label and use hover control buttons for more. Drag to move.',
 		empty: 'Empty content.',
 		node_remove: 'Remove this content block',
 		node_remove_confirm_title: 'Are you sure?',
@@ -103,29 +103,29 @@
 </script>
 
 <div class={twMerge(`${_class}`)}>
-	{#if $store?.error}
+	<!-- {#if $store?.error}
 		<code class="text-red-500 mb-4 block">{$store.error}</code>
-	{/if}
-	<div class="px-4 pb-2">
-		{#if $store.size > 1}
-			<ContentNode
-				node={tree.root}
-				{store}
-				{t}
-				{theme}
-				{disabled}
-				{acp}
-				{onNodeEditRequest}
-				showNodeId={debug}
-			/>
-		{:else}
-			<div class="text-sm opacity-50 text-center">{@html t('empty')}</div>
-		{/if}
-	</div>
+	{/if} -->
+	<!-- <div class="px-4 pb-2"> -->
 	{#if $store.size > 1}
+		<ContentNode
+			node={tree.root}
+			{store}
+			{t}
+			{theme}
+			{disabled}
+			{acp}
+			{onNodeEditRequest}
+			showNodeId={debug}
+		/>
+	{:else}
+		<div class="text-sm opacity-50 text-center">{@html t('empty')}</div>
+	{/if}
+	<!-- </div> -->
+	<!-- {#if $store.size > 1}
 		<div class="text-sm opacity-50 flex items-center">
 			{@html iconFeatherHelpCircle({ size: 16, class: 'mr-2' })}
 			{@html t('instructions')}
 		</div>
-	{/if}
+	{/if} -->
 </div>

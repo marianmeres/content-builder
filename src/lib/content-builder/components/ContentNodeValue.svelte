@@ -34,7 +34,11 @@
 	<div class="flex-1 pr-2">
 		<input
 			type="text"
-			class="w-full focus:outline-none focus:bg-gray-100 hover:bg-gray-50"
+			class="
+				w-full
+				focus:outline-none focus:bg-gray-100 hover:bg-gray-50
+				border-none p-0 text-base
+			"
 			class:cursor-not-allowed={disabled}
 			bind:this={input}
 			bind:value={value.label}

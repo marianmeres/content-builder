@@ -52,6 +52,9 @@
 </script>
 
 <div class="p-6">
+	{#if $store?.error}
+		<code class="text-red-500 text-sm block">{$store.error}</code>
+	{/if}
 	<ContentBuilder {store} {disabled} {acp} debug />
 </div>
 {#if $store.size > 1}

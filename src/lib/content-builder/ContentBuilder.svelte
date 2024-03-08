@@ -1,9 +1,7 @@
 <script lang="ts" context="module">
 	import { createClog } from '@marianmeres/clog';
-	import { iconFeatherHelpCircle } from '@marianmeres/icons-fns';
 	import { createPrompt, type createAlertConfirmPromptStore } from '@marianmeres/stuic';
 	import { Tree } from '@marianmeres/tree';
-	import { createEventDispatcher } from 'svelte';
 	import { twMerge } from 'tailwind-merge';
 	import ContentNode from './components/ContentNode.svelte';
 	import { createContentBuilderStore } from './content-builder.js';
@@ -36,13 +34,12 @@
 	export let store: ReturnType<typeof createContentBuilderStore>;
 
 	export let i18n: Record<string, string> = {
-		// instructions: 'Edit label and use hover control buttons for more. Drag to move.',
-		empty: 'Empty content. Click here to append first block.',
+		empty: 'Click here to append first content block',
 		node_remove: 'Remove this content block',
 		node_remove_confirm_title: 'Are you sure?',
 		node_remove_confirm: [
-			'This operation removes the selected content block and saves it immediately.',
-			'It is not possible to undo. Continue?'
+			'This operation removes the selected content block and all its inner blocks (if any).',
+			'There is no undo. Continue?'
 		].join(' '),
 		node_add: 'Add new content block inside this block',
 		node_duplicate: 'Duplicate this content block',
@@ -103,10 +100,6 @@
 </script>
 
 <div class={twMerge(`${_class}`)}>
-	<!-- {#if $store?.error}
-		<code class="text-red-500 mb-4 block">{$store.error}</code>
-	{/if} -->
-	<!-- <div class="px-4 pb-2"> -->
 	{#if $store.size > 1}
 		<ContentNode
 			node={tree.root}
@@ -127,20 +120,15 @@
 					border-dashed border-[3px] border-gray-300
 					hover:border-black
 					focus:outline-none focus:border-black
-					px-3 py-1
 					rounded-md
+					p-2 px-3
+					flex items-center justify-center leading-none
+					group
 				"
 				on:click={() => store.add(null)}
 			>
-				{@html t('empty')}
+				<span class="opacity-75 group-hover:opacity-100">{@html t('empty')}</span>
 			</button>
 		</div>
 	{/if}
-	<!-- </div> -->
-	<!-- {#if $store.size > 1}
-		<div class="text-sm opacity-50 flex items-center">
-			{@html iconFeatherHelpCircle({ size: 16, class: 'mr-2' })}
-			{@html t('instructions')}
-		</div>
-	{/if} -->
 </div>

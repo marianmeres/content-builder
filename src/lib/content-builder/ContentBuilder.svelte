@@ -37,7 +37,7 @@
 
 	export let i18n: Record<string, string> = {
 		// instructions: 'Edit label and use hover control buttons for more. Drag to move.',
-		empty: 'Empty content.',
+		empty: 'Empty content. Click here to append first block.',
 		node_remove: 'Remove this content block',
 		node_remove_confirm_title: 'Are you sure?',
 		node_remove_confirm: [
@@ -119,7 +119,22 @@
 			showNodeId={debug}
 		/>
 	{:else}
-		<div class="text-sm opacity-50 text-center">{@html t('empty')}</div>
+		<div class="text-center">
+			<button
+				class="
+					text-sm mx-auto
+					text-gray-800
+					border-dashed border-[3px] border-gray-300
+					hover:border-black
+					focus:outline-none focus:border-black
+					px-3 py-1
+					rounded-md
+				"
+				on:click={() => store.add(null)}
+			>
+				{@html t('empty')}
+			</button>
+		</div>
 	{/if}
 	<!-- </div> -->
 	<!-- {#if $store.size > 1}

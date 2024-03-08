@@ -12,7 +12,8 @@
 		"lint": "prettier --check .",
 		"prettier": "prettier --write .",
 		"release:patch": "release -v patch",
-		"release": "release -v minor"
+		"release": "release -v minor",
+		"release:major": "release -v major"
 	},
 	"exports": {
 		".": {

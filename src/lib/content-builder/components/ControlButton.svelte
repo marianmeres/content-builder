@@ -24,6 +24,7 @@
 	aria-label={ariaLabel}
 	use:tooltip
 	{disabled}
+	type="button"
 >
 	<slot />
 </button>

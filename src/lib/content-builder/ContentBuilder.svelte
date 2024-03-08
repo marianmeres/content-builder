@@ -114,6 +114,7 @@
 	{:else}
 		<div class="text-center">
 			<button
+				type="button"
 				class="
 					text-sm mx-auto
 					text-gray-800

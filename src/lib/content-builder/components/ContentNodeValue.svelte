@@ -61,6 +61,7 @@
 				text-xs font-mono rounded-full p-1 px-2 bg-gray-100
 			"
 		on:click={async () => onNodeEditRequest(key, value)}
+		type="button"
 	>
 		<span class="opacity-75">{value.type}</span>
 	</button>

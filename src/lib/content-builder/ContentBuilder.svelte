@@ -60,7 +60,10 @@
 	export let disabled = false;
 
 	//
-	const defaultOnNodeEdit = async (key: string, value: ContentBuilderNodeValue) => {
+	export const defaultOnNodeEdit = async (
+		key: string,
+		value: ContentBuilderNodeValue
+	) => {
 		if (!acp) {
 			console.warn(
 				'Default `defaultOnNodeEdit` is a no-op, because `acp` instance was not provided.'

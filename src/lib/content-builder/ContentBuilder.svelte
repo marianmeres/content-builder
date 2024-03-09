@@ -87,7 +87,7 @@
 				}
 			);
 			// @ts-ignore
-			store.edit(key, valueData);
+			valueData && store.edit(key, valueData);
 		}
 	};
 

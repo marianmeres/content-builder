@@ -75,7 +75,7 @@
 				<li><ContentNodeDropzone id={node?.key} {store} index={-1} {disabled} /></li>
 			{/if}
 			<li
-				class:mx-8={!node.isRoot}
+				class:mx-4={!node.isRoot}
 				class={twMerge(
 					`select-none relative`,
 					theme?.li || '',
@@ -161,7 +161,7 @@
 					<div
 						class={twMerge(`
 						absolute leading-none
-						top-[100%] -right-[2px] z-10
+						top-[100%] -right-[3px] z-10
 						bg-black
 						${theme?.hover_control?.box || ''}
 						rounded-b

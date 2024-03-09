@@ -11,6 +11,8 @@ export {
 	type ContentBuilderRendererComponentDef
 } from './content-builder/ContentBuilderNodeRenderer.svelte';
 
+export { default as GenericRenderer } from './content-builder/components/renderer/GenericRenderer.svelte';
+
 export {
 	createContentBuilderStore,
 	type ContentBuilderStoreVal,

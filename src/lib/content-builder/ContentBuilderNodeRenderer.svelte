@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import type { TreeNode } from '@marianmeres/tree';
-	import Default from './components/renderer/Default.svelte';
+	import GenericRenderer from './components/renderer/GenericRenderer.svelte';
 	import type { ContentBuilderNodeValue } from './types.js';
 
 	export let typeToComponentMap: Record<string, ContentBuilderRendererComponentDef> = {};
@@ -15,7 +15,7 @@
 
 	// $: clog(123, node?.isRoot);
 	const getCmp = (key: string, value: ContentBuilderNodeValue) => ({
-		component: typeToComponentMap?.[value.type]?.component || Default,
+		component: typeToComponentMap?.[value.type]?.component || GenericRenderer,
 		props: {
 			key,
 			type: value.type,

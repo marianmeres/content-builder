@@ -4,9 +4,12 @@
 
 	export let html: string = '';
 	export let style: string = '';
+
+	let _class: string = '';
+	export { _class as class };
 </script>
 
-<div {style} id={key} data-content-builder-type={type}>
+<div {style} class={_class} id={key} data-content-builder-type={type}>
 	{@html html}
 	<slot />
 </div>

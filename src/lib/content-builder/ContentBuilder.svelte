@@ -63,11 +63,12 @@
 	export const defaultOnNodeEdit = async (
 		key: string,
 		value: ContentBuilderNodeValue
-	) => {
+	): Promise<boolean> => {
 		if (!acp) {
 			console.warn(
 				'Default `defaultOnNodeEdit` is a no-op, because `acp` instance was not provided.'
 			);
+			return false;
 		} else {
 			store.resetError();
 			const valueData = await createPrompt(acp)(
@@ -88,13 +89,14 @@
 			);
 			// @ts-ignore
 			valueData && store.edit(key, valueData);
+			return !!valueData;
 		}
 	};
 
 	export let onNodeEditRequest: (
 		key: string,
 		value: ContentBuilderNodeValue
-	) => Promise<void> = defaultOnNodeEdit;
+	) => Promise<boolean> = defaultOnNodeEdit;
 
 	export let debug = false;
 

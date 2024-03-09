@@ -43,7 +43,7 @@
 	export let onNodeEditRequest: (
 		key: string,
 		value: ContentBuilderNodeValue
-	) => Promise<void>;
+	) => Promise<boolean | undefined>;
 
 	// for debug
 	export let showNodeId = false;

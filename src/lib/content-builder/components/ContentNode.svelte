@@ -201,7 +201,10 @@
 								class="rounded-br"
 								on:click={async () => {
 									const c = acp
-										? createConfirm(acp, { title: t('node_remove_confirm_title') })
+										? createConfirm(acp, {
+												title: t('node_remove_confirm_title'),
+												variant: 'warn'
+											})
 										: confirm;
 									if (await c(t('node_remove_confirm'))) {
 										store.remove(n.key);

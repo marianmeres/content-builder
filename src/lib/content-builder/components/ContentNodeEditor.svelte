@@ -35,6 +35,8 @@
 	const clog = createClog('ContentNodeEditor');
 
 	const _stringify = (v: any) => JSON.stringify(v || '', null, 2);
+
+	const isFn = (v: any) => typeof v === 'function';
 </script>
 
 <script lang="ts">
@@ -57,6 +59,10 @@
 	export function setKey(_key: string) {
 		key = _key;
 	}
+
+	export let afterEdit: CallableFunction | undefined = undefined;
+	export let afterClose: CallableFunction | undefined = undefined;
+	export let afterRemove: CallableFunction | undefined = undefined;
 
 	export let t: (i18nKey: string, params?: any) => string = (
 		i18nKey: string,
@@ -255,6 +261,7 @@
 						on:click={async () => {
 							// await builder?.defaultOnNodeEdit?.(key, JSON.parse($_raw));
 							node && (await builder?.defaultOnNodeEdit?.(key, $value));
+							afterEdit?.();
 						}}
 					>
 						{@html iconHeroMiniCodeBracket({ size: 16 })}
@@ -273,13 +280,20 @@
 							if (await c(t('node_remove_confirm'))) {
 								store.remove(key);
 							}
+							afterRemove?.();
 						}}
 					>
 						{@html iconHeroMiniTrash({ size: 16 })}
 					</Button>
 				</span>
 				<span use:tooltip aria-label="Close this editor">
-					<Button size="xs" on:click={() => (key = '')}>
+					<Button
+						size="xs"
+						on:click={() => {
+							key = '';
+							afterClose?.();
+						}}
+					>
 						{@html iconHeroMiniXMark({ size: 16 })}
 					</Button>
 				</span>

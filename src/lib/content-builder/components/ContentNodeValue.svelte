@@ -1,22 +1,22 @@
 <script lang="ts">
 	import { createClog } from '@marianmeres/clog';
-	import { Thc } from '@marianmeres/stuic';
-	import type { ContentBuilderNodeValueTypesConfig } from '../ContentBuilder.svelte';
-	import type { createContentBuilderStore } from '../content-builder.js';
+	import type { ContentBuilderStore } from '../content-builder.js';
 	import type { ContentBuilderNodeValue } from '../types.js';
+	import { tooltip } from '@marianmeres/stuic';
 
 	const clog = createClog('ContentNodeValue');
 
 	export let value: ContentBuilderNodeValue;
 	export let key: string;
-	export let store: ReturnType<typeof createContentBuilderStore>;
+	export let store: ContentBuilderStore;
 	export let disabled = false;
+	export let t: CallableFunction;
 	// for debug
 	export let showNodeId = false;
 	export let onNodeEditRequest: (
 		key: string,
 		value: ContentBuilderNodeValue
-	) => Promise<void>;
+	) => Promise<boolean | undefined>;
 
 	let input: HTMLInputElement;
 
@@ -36,6 +36,7 @@
 			type="text"
 			class="
 				w-full
+				bg-transparent
 				focus:outline-none focus:bg-gray-100 hover:bg-gray-50 focus:border-none focus:ring-0
 				border-none p-0 text-base
 				ring-0
@@ -62,6 +63,8 @@
 			"
 		on:click={async () => onNodeEditRequest(key, value)}
 		type="button"
+		aria-label={t('node_edit')}
+		use:tooltip
 	>
 		<span class="opacity-75">{value.type}</span>
 	</button>

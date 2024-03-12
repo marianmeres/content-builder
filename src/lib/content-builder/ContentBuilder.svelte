@@ -4,7 +4,7 @@
 	import { Tree } from '@marianmeres/tree';
 	import { twMerge } from 'tailwind-merge';
 	import ContentNode from './components/ContentNode.svelte';
-	import { createContentBuilderStore } from './content-builder.js';
+	import type { ContentBuilderStore } from './content-builder.js';
 	import type { ContentBuilderNodeValue } from './types.js';
 
 	export interface ContentBuilderTheme {
@@ -31,7 +31,7 @@
 	let _class = '';
 	export { _class as class };
 
-	export let store: ReturnType<typeof createContentBuilderStore>;
+	export let store: ContentBuilderStore;
 
 	export let i18n: Record<string, string> = {
 		empty: 'Click here to append first content block',
@@ -44,26 +44,48 @@
 		node_add: 'Add new content block inside this block',
 		node_duplicate: 'Duplicate this content block',
 		node_edit: 'Edit this content block',
-		drag_to_reorder: 'Drag to move'
+		drag_to_reorder: 'Drag to move',
+		//
+		label_label:
+			'Label <span class="opacity-50">(for your internal reference only)</span>',
+		label_desc: '',
+		//
+		type_label: 'Content block type',
+		type_desc:
+			'This affects how this content block will be rendered. Be aware that changing the type will reset other object values.',
+		//
+		html_label: 'Advanced: custom HTML',
+		html_desc: 'Be carefull. You may break things.',
+		//
+		style_label: 'Advanced: custom CSS',
+		style_desc: 'Be carefull. You may break things.',
+		//
+		allow_inner_label: 'Allow this block to contain inner blocks',
+		allow_inner_desc:
+			'If you uncheck, any existing inner blocks will remain intact, but will not be rendered.'
 	};
 
 	export let theme: Partial<ContentBuilderTheme> = {};
 
-	export let nodeValueByTypeConfig: ContentBuilderNodeValueTypesConfig = {};
+	export let acp: ReturnType<typeof createAlertConfirmPromptStore> | undefined =
+		undefined;
 
-	export let acp: null | ReturnType<typeof createAlertConfirmPromptStore> = null;
-
-	const t = (i18nKey: string, params: any = {}) => {
-		return i18n?.[i18nKey] || i18nKey;
+	export const t = (i18nKey: string, params: any = {}) => {
+		return i18n?.[i18nKey] ?? i18nKey;
 	};
 
 	export let disabled = false;
+	export let highlightedNodeKey: string | undefined | null = undefined;
+
+	export function setHighlightedNodeKey(key: string | null) {
+		highlightedNodeKey = key;
+	}
 
 	//
-	export const defaultOnNodeEdit = async (
+	export async function defaultOnNodeEdit(
 		key: string,
 		value: ContentBuilderNodeValue
-	): Promise<boolean> => {
+	): Promise<boolean> {
 		if (!acp) {
 			console.warn(
 				'Default `defaultOnNodeEdit` is a no-op, because `acp` instance was not provided.'
@@ -72,7 +94,9 @@
 		} else {
 			store.resetError();
 			const valueData = await createPrompt(acp)(
-				'Valid JSON format is required.',
+				[
+					'Valid JSON is required. You should continue only if you know what you are doing.'
+				].join(' '),
 				JSON.stringify(value, null, 2),
 				{
 					promptFieldProps: { type: 'textarea', class: { input: 'font-mono' } },
@@ -80,18 +104,19 @@
 					title: {
 						html: [
 							`<span class="flex items-center justify-between">`,
-							`<span>Content block raw editor</span>`,
+							`<span>Advanced content block data editor</span>`,
 							`<code class="text-xs opacity-50 font-normal">${key}</code>`,
 							`</span>`
 						].join(' ')
 					}
 				}
 			);
+
 			// @ts-ignore
 			valueData && store.edit(key, valueData);
 			return !!valueData;
 		}
-	};
+	}
 
 	export let onNodeEditRequest: (
 		key: string,
@@ -115,6 +140,8 @@
 			{acp}
 			{onNodeEditRequest}
 			showNodeId={debug}
+			{highlightedNodeKey}
+			{debug}
 		/>
 	{:else}
 		<div class="text-center">
@@ -138,3 +165,9 @@
 		</div>
 	{/if}
 </div>
+
+<style lang="scss">
+	:global([data-content-builder-node-highlighted]) {
+		background-color: #fefce8;
+	}
+</style>

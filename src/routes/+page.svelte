@@ -3,12 +3,15 @@
 	import {
 		AlertConfirmPrompt,
 		Button,
-		createAlertConfirmPromptStore
+		Notifications,
+		createAlertConfirmPromptStore,
+		createNotificationsStore
 	} from '@marianmeres/stuic';
 	import {
 		ContentBuilder,
 		createContentBuilderStore,
-		type ContentBuilderNodeValue
+		type ContentBuilderNodeValue,
+		ContentNodeEditor
 	} from '../lib/index.js';
 	import ContentBuilderNodeRenderer, {
 		type ContentBuilderRendererComponentDef
@@ -22,6 +25,8 @@
 		return typeof sessionStorage === 'undefined' ? null : sessionStorage;
 	};
 
+	const notifications = createNotificationsStore();
+
 	const store = createContentBuilderStore(storage()?.getItem('dump'), {
 		save: async (dump: string) => {
 			// simulate async server request...
@@ -29,7 +34,7 @@
 				setTimeout(() => {
 					storage()?.setItem('dump', dump);
 					resolve(true);
-				}, 1_000);
+				}, 300);
 			});
 		},
 		logger: clog
@@ -49,36 +54,83 @@
 			}
 		}
 	};
+
+	let builder: ContentBuilder;
+	let editor: ContentNodeEditor;
+
+	let globalNotifsCmp: Notifications;
 </script>
 
-<div class="p-6">
-	{#if $store?.error}
-		<code class="text-red-500 text-sm block">{$store.error}</code>
-	{/if}
-	<ContentBuilder {store} {disabled} {acp} debug />
-</div>
-{#if $store.size > 1}
-	<div class="text-xs opacity-50 px-6 mb-4">
-		Edit label and use hover control buttons for more. Drag to move.
+<div class="flex">
+	<div class="flex-1">
+		<div class="p-6">
+			{#if $store?.error}
+				<code class="text-red-500 text-sm block">{$store.error}</code>
+			{/if}
+			<ContentBuilder
+				bind:this={builder}
+				{store}
+				{disabled}
+				{acp}
+				debug={false}
+				onNodeEditRequest={async (k, v) => {
+					// key = k;
+					editor?.setKey(k);
+					// await builder?.defaultOnNodeEdit(k, v);
+					// editor?.setKey('');
+					return true;
+				}}
+			/>
+			<!-- highlightedNodeKey="n-n6izkflr" -->
+		</div>
+		{#if $store.size > 1}
+			<div class="text-xs opacity-50 px-6 mb-4">
+				Edit label and use hover control buttons for more. Drag to move.
+			</div>
+		{/if}
+
+		<div class="p-4 border-t space-x-4">
+			<Button on:click={() => store.add(null)} size="sm" {disabled}>Append block</Button>
+			<label class="inline-flex items-center space-x-2">
+				<input type="checkbox" bind:checked={disabled} />
+				<span>disabled</span>
+			</label>
+			<span>Blocks: {$store.size - 1}</span>
+			{#if $store?.isSaving}
+				<span class="opacity-25">Saving...</span>
+			{/if}
+		</div>
+
+		{#if tree.size() > 1}
+			<div class="p-4 bg-gray-50">
+				<ContentBuilderNodeRenderer node={tree.root} {typeToComponentMap} />
+			</div>
+		{/if}
 	</div>
-{/if}
 
-<div class="p-4 border-t space-x-4">
-	<Button on:click={() => store.add(null)} size="sm" {disabled}>Append block</Button>
-	<label class="inline-flex items-center space-x-2">
-		<input type="checkbox" bind:checked={disabled} />
-		<span>disabled</span>
-	</label>
-	<span>Blocks: {$store.size - 1}</span>
-	{#if $store?.isSaving}
-		<span class="opacity-25">Saving...</span>
-	{/if}
+	<div class="w-full max-w-[33%] bg-gray-100">
+		<ContentNodeEditor
+			bind:this={editor}
+			{notifications}
+			{acp}
+			{store}
+			{builder}
+			class="bg-gray-200 p-4"
+			t={(...args) => builder?.t.apply(null, args)}
+		/>
+	</div>
 </div>
 
-{#if tree.size() > 1}
-	<div class="p-4 bg-gray-50">
-		<ContentBuilderNodeRenderer node={tree.root} {typeToComponentMap} />
-	</div>
-{/if}
+<AlertConfirmPrompt
+	{acp}
+	{notifications}
+	notificationsPositionConfig={globalNotifsCmp?.getPositionConfig() || {}}
+/>
 
-<AlertConfirmPrompt {acp} />
+<Notifications posY="bottom" {notifications} bind:this={globalNotifsCmp} />
+
+<style lang="scss">
+	// :global([data-content-builder-node-highlighted]) {
+	// background-color: #ffc !important;
+	// }
+</style>

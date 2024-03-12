@@ -6,6 +6,8 @@ export {
 	type ContentBuilderTheme
 } from './content-builder/ContentBuilder.svelte';
 
+export { default as ContentNodeEditor } from './content-builder/components/ContentNodeEditor.svelte';
+
 export {
 	default as ContentBuilderNodeRenderer,
 	type ContentBuilderRendererComponentDef
@@ -19,4 +21,8 @@ export {
 	type ContentBuilderStore
 } from './content-builder/content-builder.js';
 
-export type { ContentBuilderNodeValue } from './content-builder/types.js';
+export type {
+	ContentBuilderNodeValue,
+	ContentNodeEditorTypeConfigProp,
+	ContentNodeEditorTypeConfig
+} from './content-builder/types.js';

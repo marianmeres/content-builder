@@ -34,8 +34,10 @@
 {:else if node}
 	{@const cmp = getCmp(node.key, node.value)}
 	<svelte:component this={cmp.component} {...cmp?.props || {}}>
-		{#each node?.children || [] as child}
-			<svelte:self node={child} {typeToComponentMap} />
-		{/each}
+		{#if node.value.allowInnerBlocks}
+			{#each node?.children || [] as child}
+				<svelte:self node={child} {typeToComponentMap} />
+			{/each}
+		{/if}
 	</svelte:component>
 {/if}

@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { createClog } from '@marianmeres/clog';
 	import { droppable } from '@marianmeres/stuic';
-	import { writable } from 'svelte/store';
-	import type { createContentBuilderStore } from '../content-builder.js';
 	import { Tree } from '@marianmeres/tree';
+	import { writable } from 'svelte/store';
+	import type { ContentBuilderStore } from '../content-builder.js';
 	import type { ContentBuilderNodeValue } from '../types.js';
 
 	const clog = createClog('Dropzone');
 
 	export let index: number = 0;
 	export let id: string = '';
-	export let store: ReturnType<typeof createContentBuilderStore>;
+	export let store: ContentBuilderStore;
 	export let disabled = false;
 
 	const isDraggedOver = writable<string | null>(null);

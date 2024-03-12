@@ -18,22 +18,20 @@
 	import { createEventDispatcher } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { twMerge } from 'tailwind-merge';
-	import type {
-		ContentBuilderNodeValueTypesConfig,
-		ContentBuilderTheme
-	} from '../ContentBuilder.svelte';
-	import type { createContentBuilderStore } from '../content-builder.js';
+	import type { ContentBuilderTheme } from '../ContentBuilder.svelte';
+	import type { ContentBuilderStore } from '../content-builder.js';
 	import type { ContentBuilderNodeValue } from '../types.js';
 	import ContentNodeDropzone from './ContentNodeDropzone.svelte';
 	import ContentNodeValue from './ContentNodeValue.svelte';
 	import ControlButton from './ControlButton.svelte';
+	import Debug from './Debug.svelte';
 
 	const clog = createClog('ContentNode');
 	const dispatch = createEventDispatcher();
 
 	// export let tree: Tree<ContentBuilderNodeValue>;
 	export let node: TreeNode<ContentBuilderNodeValue> | null;
-	export let store: ReturnType<typeof createContentBuilderStore>;
+	export let store: ContentBuilderStore;
 	export let hoveredKeys = writable<string[]>([]);
 	export let t: CallableFunction;
 	export let theme: Partial<ContentBuilderTheme>;
@@ -47,6 +45,8 @@
 
 	// for debug
 	export let showNodeId = false;
+	export let highlightedNodeKey: string | undefined | null = undefined;
+	export let debug = false;
 
 	const onHover = (n: TreeNode<ContentBuilderNodeValue>) => {
 		$hoveredKeys = [...$hoveredKeys, n.key];
@@ -63,6 +63,15 @@
 	// $: clog($isDraggedOver);
 	// $: clog('node', node.key, node.depth);
 	// $: clog($isDragged);
+	const _isDropzoneEnabled = (n: TreeNode<ContentBuilderNodeValue>) => {
+		// if...
+		return (
+			// root is always droppable, or
+			n.isRoot ||
+			// is explicitly allowed
+			node?.value?.allowInnerBlocks
+		);
+	};
 </script>
 
 {#if node?.children?.length}
@@ -72,7 +81,15 @@
 			{@const isHovered = !disabled && $hoveredKeys.at(-1) === n.key}
 			{#if !index}
 				<!-- special case -1 signal -->
-				<li><ContentNodeDropzone id={node?.key} {store} index={-1} {disabled} /></li>
+				<li>
+					<Debug {node} {debug} dropzoneEnabled={_isDropzoneEnabled(node)} />
+					<ContentNodeDropzone
+						id={node?.key}
+						{store}
+						index={-1}
+						disabled={disabled || !_isDropzoneEnabled(node)}
+					/>
+				</li>
 			{/if}
 			<li
 				class:mx-4={!node.isRoot}
@@ -119,6 +136,9 @@
 						},
 						isDraggedOver
 					}}
+					data-content-builder-node-highlighted={highlightedNodeKey === n.key
+						? true
+						: undefined}
 				>
 					<div class="flex w-full">
 						<div
@@ -138,22 +158,27 @@
 								{disabled}
 								{showNodeId}
 								{onNodeEditRequest}
+								{t}
 							/>
 						</div>
 					</div>
 
 					{#if n.children?.length}
-						<svelte:self
-							node={n}
-							{store}
-							{hoveredKeys}
-							{t}
-							{theme}
-							{disabled}
-							{acp}
-							{showNodeId}
-							{onNodeEditRequest}
-						/>
+						<div class={!n.value.allowInnerBlocks ? 'text-red-500' : ''}>
+							<svelte:self
+								node={n}
+								{store}
+								{hoveredKeys}
+								{t}
+								{theme}
+								{disabled}
+								{acp}
+								{showNodeId}
+								{onNodeEditRequest}
+								{highlightedNodeKey}
+								{debug}
+							/>
+						</div>
 					{/if}
 				</div>
 
@@ -219,8 +244,20 @@
 					</div>
 				{/if}
 			</li>
-			<li>
-				<ContentNodeDropzone id={node.key} {store} {index} {disabled} />
+			<li
+				data-content-builder-node-debug={JSON.stringify({
+					isRoot: node.isRoot,
+					parentIsRoot: node.parent?.isRoot,
+					parentAllowInnerBlocks: node.parent?.value?.allowInnerBlocks
+				})}
+			>
+				<Debug {node} {debug} dropzoneEnabled={_isDropzoneEnabled(node)} />
+				<ContentNodeDropzone
+					id={node.key}
+					{store}
+					{index}
+					disabled={disabled || !_isDropzoneEnabled(node)}
+				/>
 			</li>
 		{/each}
 	</ol>

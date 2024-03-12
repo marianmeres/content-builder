@@ -7,10 +7,10 @@ const defaultNodeValue: ContentBuilderNodeValue = {
 	type: 'default',
 	label: '',
 	props: {
-		html: '',
-		style: ''
+		// html: '',
+		// style: ''
 	},
-	// a.k.a. allow childred (but keepping the naming less technical)
+	// a.k.a. allow children (but keepping the naming less technical)
 	allowInnerBlocks: true
 };
 
@@ -35,7 +35,7 @@ export interface ContentBuilderStoreVal {
 export interface ContentBuilderStore extends StoreReadable<ContentBuilderStoreVal> {
 	add: (parentKey: string | null, value?: ContentBuilderNodeValue) => void;
 	duplicate: (key: string) => void;
-	move: (srcKey: string, targetKey: string, targetIndex: number) => void;
+	move: (srcKey: string, targetKey: string, targetIndex?: number) => void;
 	remove: (key: string) => void;
 	edit: (srcKey: string, valueData: string | ContentBuilderNodeValue) => void;
 	resetError: () => void;

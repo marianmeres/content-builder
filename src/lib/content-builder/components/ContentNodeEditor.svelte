@@ -100,6 +100,29 @@
 	$: tree = Tree.factory<ContentBuilderNodeValue>($store.data || '', true);
 	$: node = tree.find(key);
 
+	export function close() {
+		key = '';
+		afterClose?.();
+	}
+
+	export async function openRawEditor() {
+		node && (await builder?.defaultOnNodeEdit?.(key, $value));
+		afterEdit?.();
+	}
+
+	export async function remove() {
+		const c = acp
+			? createConfirm(acp, {
+					title: t('node_remove_confirm_title'),
+					variant: 'warn'
+				})
+			: confirm;
+		if (await c(t('node_remove_confirm'))) {
+			store.remove(key);
+		}
+		afterRemove?.();
+	}
+
 	// prepare stores
 	const _type = writable('');
 	const _label = writable('');
@@ -265,51 +288,21 @@
 				<div class={twMerge('space-x-2 mt-8', buttonBoxClass)}>
 					{#if showButtonEdit}
 						<span use:tooltip aria-label="Advanced raw data editor">
-							<Button
-								size="sm"
-								data-content-editor-edit
-								on:click={async () => {
-									// await builder?.defaultOnNodeEdit?.(key, JSON.parse($_raw));
-									node && (await builder?.defaultOnNodeEdit?.(key, $value));
-									afterEdit?.();
-								}}
-							>
+							<Button size="sm" data-content-editor-edit on:click={openRawEditor}>
 								{@html iconHeroMiniCodeBracket({ size: 16 })}
 							</Button>
 						</span>
 					{/if}
 					{#if showButtonRemove}
 						<span use:tooltip aria-label="Delete this content block">
-							<Button
-								size="sm"
-								data-content-editor-remove
-								on:click={async () => {
-									const c = acp
-										? createConfirm(acp, {
-												title: t('node_remove_confirm_title'),
-												variant: 'warn'
-											})
-										: confirm;
-									if (await c(t('node_remove_confirm'))) {
-										store.remove(key);
-									}
-									afterRemove?.();
-								}}
-							>
+							<Button size="sm" data-content-editor-remove on:click={remove}>
 								{@html iconHeroMiniTrash({ size: 16 })}
 							</Button>
 						</span>
 					{/if}
 					{#if showButtonClose}
 						<span use:tooltip aria-label="Close this editor">
-							<Button
-								size="sm"
-								data-content-editor-close
-								on:click={() => {
-									key = '';
-									afterClose?.();
-								}}
-							>
+							<Button size="sm" data-content-editor-close on:click={close}>
 								{@html iconHeroMiniXMark({ size: 16 })}
 							</Button>
 						</span>

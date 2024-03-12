@@ -40,8 +40,11 @@
 </script>
 
 <script lang="ts">
+	import { twMerge } from 'tailwind-merge';
+
 	let _class = '';
 	export { _class as class };
+	export let buttonBoxClass = '';
 
 	// prettier-ignore
 	export let notifications: ReturnType<typeof createNotificationsStore> | undefined = undefined;
@@ -63,6 +66,10 @@
 	export let afterEdit: CallableFunction | undefined = undefined;
 	export let afterClose: CallableFunction | undefined = undefined;
 	export let afterRemove: CallableFunction | undefined = undefined;
+
+	export let showButtonEdit = true;
+	export let showButtonClose = true;
+	export let showButtonRemove = true;
 
 	export let t: (i18nKey: string, params?: any) => string = (
 		i18nKey: string,
@@ -254,50 +261,61 @@
 
 			<!-- <pre class="text-xs">{_stringify($value)}</pre> -->
 
-			<div class="flex justify-end space-x-2">
-				<span use:tooltip aria-label="Advanced raw data editor">
-					<Button
-						size="xs"
-						on:click={async () => {
-							// await builder?.defaultOnNodeEdit?.(key, JSON.parse($_raw));
-							node && (await builder?.defaultOnNodeEdit?.(key, $value));
-							afterEdit?.();
-						}}
-					>
-						{@html iconHeroMiniCodeBracket({ size: 16 })}
-					</Button>
-				</span>
-				<span use:tooltip aria-label="Delete this content block">
-					<Button
-						size="xs"
-						on:click={async () => {
-							const c = acp
-								? createConfirm(acp, {
-										title: t('node_remove_confirm_title'),
-										variant: 'warn'
-									})
-								: confirm;
-							if (await c(t('node_remove_confirm'))) {
-								store.remove(key);
-							}
-							afterRemove?.();
-						}}
-					>
-						{@html iconHeroMiniTrash({ size: 16 })}
-					</Button>
-				</span>
-				<span use:tooltip aria-label="Close this editor">
-					<Button
-						size="xs"
-						on:click={() => {
-							key = '';
-							afterClose?.();
-						}}
-					>
-						{@html iconHeroMiniXMark({ size: 16 })}
-					</Button>
-				</span>
-			</div>
+			{#if showButtonEdit || showButtonClose || showButtonRemove}
+				<div class={twMerge('space-x-2 mt-8', buttonBoxClass)}>
+					{#if showButtonEdit}
+						<span use:tooltip aria-label="Advanced raw data editor">
+							<Button
+								size="sm"
+								data-content-editor-edit
+								on:click={async () => {
+									// await builder?.defaultOnNodeEdit?.(key, JSON.parse($_raw));
+									node && (await builder?.defaultOnNodeEdit?.(key, $value));
+									afterEdit?.();
+								}}
+							>
+								{@html iconHeroMiniCodeBracket({ size: 16 })}
+							</Button>
+						</span>
+					{/if}
+					{#if showButtonRemove}
+						<span use:tooltip aria-label="Delete this content block">
+							<Button
+								size="sm"
+								data-content-editor-remove
+								on:click={async () => {
+									const c = acp
+										? createConfirm(acp, {
+												title: t('node_remove_confirm_title'),
+												variant: 'warn'
+											})
+										: confirm;
+									if (await c(t('node_remove_confirm'))) {
+										store.remove(key);
+									}
+									afterRemove?.();
+								}}
+							>
+								{@html iconHeroMiniTrash({ size: 16 })}
+							</Button>
+						</span>
+					{/if}
+					{#if showButtonClose}
+						<span use:tooltip aria-label="Close this editor">
+							<Button
+								size="sm"
+								data-content-editor-close
+								on:click={() => {
+									key = '';
+									afterClose?.();
+								}}
+							>
+								{@html iconHeroMiniXMark({ size: 16 })}
+							</Button>
+						</span>
+					{/if}
+				</div>
+			{/if}
 		</form>
 	{/key}
 {/if}

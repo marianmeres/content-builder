@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import { createClog } from '@marianmeres/clog';
 	import {
+		iconHeroMiniArrowPath,
 		iconHeroMiniCodeBracket,
 		iconHeroMiniTrash,
 		iconHeroMiniXMark
@@ -75,6 +76,7 @@
 	export let showButtonEdit = true;
 	export let showButtonClose = true;
 	export let showButtonRemove = true;
+	export let showIsSaving = true;
 
 	export let size: 'sm' | 'md' = 'md';
 
@@ -85,18 +87,25 @@
 
 	// read and normalize config
 	$: _typesConfig = [...defaultTypesConfig, ...typesConfig];
-	$: _typeConfigMap = _typesConfig.reduce((m, o) => {
-		m.set(o.value, {
-			label: o.label || o.value,
-			props: (o.props || []).reduce((m2, p) => {
-				m2.set(p.name, p);
-				return m2;
-			}, new Map<string, ContentNodeEditorTypeConfigProp>()),
-			allowInnerBlocks: o?.allowInnerBlocks || {}
-		});
+	$: _typeConfigMap = _typesConfig.reduce(
+		(m, o) => {
+			m.set(o.value, {
+				label: o.label || o.value,
+				props: (o.props || []).reduce((m2, p) => {
+					m2.set(p.name, p);
+					return m2;
+				}, new Map<string, ContentNodeEditorTypeConfigProp>()),
+				allowInnerBlocks: o?.allowInnerBlocks || {}
+			});
 
-		return m;
-	}, new Map<string, NormalizedConfig>());
+			return m;
+		},
+		// make sure `html` and `style` is preset in every type (so it resets properly)
+		new Map<string, NormalizedConfig>([
+			['html', { value: '' }],
+			['style', { value: '' }]
+		] as any)
+	);
 
 	// load current node
 	$: builder?.setHighlightedNodeKey(key || null);
@@ -342,40 +351,54 @@
 
 			<!-- <pre class="text-xs">{_stringify($value)}</pre> -->
 
-			{#if showButtonEdit || showButtonClose || showButtonRemove}
-				<div class={twMerge('space-x-2 mt-8', buttonBoxClass)}>
-					{#if showButtonEdit}
-						<span use:tooltip aria-label="Advanced raw data editor">
-							<Button
-								size={_ifSmall(size, 'sm', 'md')}
-								data-content-editor-edit
-								on:click={openRawEditor}
-							>
-								{@html iconHeroMiniCodeBracket({ size: 16 })}
-							</Button>
-						</span>
-					{/if}
-					{#if showButtonRemove}
-						<span use:tooltip aria-label="Delete this content block">
-							<Button
-								size={_ifSmall(size, 'sm', 'md')}
-								data-content-editor-remove
-								on:click={remove}
-							>
-								{@html iconHeroMiniTrash({ size: 16 })}
-							</Button>
-						</span>
-					{/if}
-					{#if showButtonClose}
-						<span use:tooltip aria-label="Close this editor">
-							<Button
-								size={_ifSmall(size, 'sm', 'md')}
-								data-content-editor-close
-								on:click={close}
-							>
-								{@html iconHeroMiniXMark({ size: 16 })}
-							</Button>
-						</span>
+			{#if showButtonEdit || showButtonClose || showButtonRemove || showIsSaving}
+				<div
+					class={twMerge(
+						'space-x-2 mt-8 flex items-start justify-center',
+						buttonBoxClass
+					)}
+				>
+					<div class="flex-1">
+						{#if showButtonEdit}
+							<span use:tooltip aria-label="Advanced raw data editor">
+								<Button
+									size={_ifSmall(size, 'sm', 'md')}
+									data-content-editor-edit
+									on:click={openRawEditor}
+								>
+									{@html iconHeroMiniCodeBracket({ size: 16 })}
+								</Button>
+							</span>
+						{/if}
+						{#if showButtonRemove}
+							<span use:tooltip aria-label="Delete this content block">
+								<Button
+									size={_ifSmall(size, 'sm', 'md')}
+									data-content-editor-remove
+									on:click={remove}
+								>
+									{@html iconHeroMiniTrash({ size: 16 })}
+								</Button>
+							</span>
+						{/if}
+						{#if showButtonClose}
+							<span use:tooltip aria-label="Close this editor">
+								<Button
+									size={_ifSmall(size, 'sm', 'md')}
+									data-content-editor-close
+									on:click={close}
+								>
+									{@html iconHeroMiniXMark({ size: 16 })}
+								</Button>
+							</span>
+						{/if}
+					</div>
+					{#if $store?.isSaving}
+						<div class="opacity-25">
+							{@html iconHeroMiniArrowPath({
+								class: twMerge('animate-spin m-auto inline')
+							})}
+						</div>
 					{/if}
 				</div>
 			{/if}

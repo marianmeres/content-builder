@@ -151,11 +151,11 @@
 								placeholder: 'rgb(0 0 0 / .5)'
 							}
 						}
-					]
-					// allowInnerBlocks: {
-					// 	value: true,
-					// 	hidden: true
-					// }
+					],
+					allowInnerBlocks: {
+						value: true,
+						hidden: true
+					}
 				}
 			]}
 		/>

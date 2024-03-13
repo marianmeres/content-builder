@@ -59,7 +59,7 @@
 		html_desc: 'Be careful. You can break things.',
 		//
 		style_label: 'Advanced: custom CSS',
-		style_desc: 'Be careful. You can break things.',
+		style_desc: '',
 		//
 		hidden_label: 'Hidden',
 		hidden_desc:

@@ -62,7 +62,7 @@
 		//
 		allow_inner_label: 'Allow this block to contain inner blocks',
 		allow_inner_desc:
-			'If you uncheck, any existing inner blocks will remain intact, but will not be rendered.'
+			'If unchecked, any existing inner blocks will not be rendered, but will remain intact.'
 	};
 
 	export let theme: Partial<ContentBuilderTheme> = {};

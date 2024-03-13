@@ -71,6 +71,8 @@
 	export let showButtonClose = true;
 	export let showButtonRemove = true;
 
+	export let size: 'sm' | 'md' = 'md';
+
 	export let t: (i18nKey: string, params?: any) => string = (
 		i18nKey: string,
 		params?: any
@@ -100,6 +102,7 @@
 	$: tree = Tree.factory<ContentBuilderNodeValue>($store.data || '', true);
 	$: node = tree.find(key);
 
+	// expose some
 	export function close() {
 		key = '';
 		afterClose?.();
@@ -162,10 +165,8 @@
 		return props;
 	};
 
-	// initial props on type change helper
-	let _seen: Record<string, string> = {};
-
 	// initialize store if node was not seen yet
+	let _seen: Record<string, string> = {};
 	$: if (node && !_seen[key]) {
 		_seen[key] = node.value.type;
 		$_props = _applyConfigProps(node.value.props || {}, false); // defensive
@@ -179,6 +180,7 @@
 
 	const _save = () => node && store.edit(key, $value);
 
+	// intentionally as fn (so the "t" fn will be available when passing the ContentBuilder's exposed t)
 	const TYPE_TO_LABEL = (): Record<string, Record<string, string>> => ({
 		html: {
 			label: t('html_label'),
@@ -190,23 +192,30 @@
 		}
 	});
 
-	const commonInputProps = {
-		size: 'sm',
-		class: { input: 'font-mono bg-white p-1 text-xs', description: 'text-xs' }
+	// DRY
+	const _ifSmall = (size: 'sm' | 'md', ifSm: string, ifMd: string): any =>
+		size === 'sm' ? ifSm : ifMd;
+
+	// DRY
+	const _commonInputProps = {
+		class: {
+			input: `font-mono bg-white p-1 ${_ifSmall(size, 'text-xs', 'text-sm')}`,
+			description: _ifSmall(size, 'text-xs', 'text-sm')
+		}
 	};
 
 	const TYPE_TO_FIELD = {
 		text: {
 			component: Field,
 			props: {
-				...commonInputProps,
+				..._commonInputProps,
 				type: 'text'
 			}
 		},
 		textarea: {
 			component: Field,
 			props: {
-				...commonInputProps,
+				..._commonInputProps,
 				type: 'textarea'
 			}
 		}
@@ -230,7 +239,7 @@
 				type="text"
 				label={t('label_label')}
 				description={t('label_desc')}
-				size="sm"
+				size={_ifSmall(size, 'sm', 'md')}
 				class={{ input: 'bg-white p-1 text-sm rounded-r-none' }}
 				on:change={_save}
 			>
@@ -249,10 +258,10 @@
 				bind:value={$_type}
 				class={{
 					input: 'bg-white p-1 text-sm',
-					description: 'text-xs'
+					description: _ifSmall(size, 'text-xs', 'text-sm')
 				}}
 				options={_typesConfig.map((o) => ({ label: o.label || o.value, value: o.value }))}
-				size="sm"
+				size={_ifSmall(size, 'sm', 'md')}
 				on:change={_save}
 			/>
 
@@ -267,6 +276,7 @@
 						name={k}
 						bind:value={$_props[k]}
 						on:change={_save}
+						size={_ifSmall(size, 'sm', 'md')}
 					/>
 				{/each}
 			{/if}
@@ -277,8 +287,8 @@
 					description={t('allow_inner_desc')}
 					bind:checked={$_allowInnerBlocks}
 					on:change={_save}
-					size="sm"
-					class={{ description: 'text-xs' }}
+					size={_ifSmall(size, 'sm', 'md')}
+					class={{ description: _ifSmall(size, 'text-xs', 'text-sm') }}
 				/>
 			{/if}
 
@@ -288,21 +298,33 @@
 				<div class={twMerge('space-x-2 mt-8', buttonBoxClass)}>
 					{#if showButtonEdit}
 						<span use:tooltip aria-label="Advanced raw data editor">
-							<Button size="sm" data-content-editor-edit on:click={openRawEditor}>
+							<Button
+								size={_ifSmall(size, 'sm', 'md')}
+								data-content-editor-edit
+								on:click={openRawEditor}
+							>
 								{@html iconHeroMiniCodeBracket({ size: 16 })}
 							</Button>
 						</span>
 					{/if}
 					{#if showButtonRemove}
 						<span use:tooltip aria-label="Delete this content block">
-							<Button size="sm" data-content-editor-remove on:click={remove}>
+							<Button
+								size={_ifSmall(size, 'sm', 'md')}
+								data-content-editor-remove
+								on:click={remove}
+							>
 								{@html iconHeroMiniTrash({ size: 16 })}
 							</Button>
 						</span>
 					{/if}
 					{#if showButtonClose}
 						<span use:tooltip aria-label="Close this editor">
-							<Button size="sm" data-content-editor-close on:click={close}>
+							<Button
+								size={_ifSmall(size, 'sm', 'md')}
+								data-content-editor-close
+								on:click={close}
+							>
 								{@html iconHeroMiniXMark({ size: 16 })}
 							</Button>
 						</span>

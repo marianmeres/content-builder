@@ -12,7 +12,6 @@ export const defaultTypesConfig: ContentNodeEditorTypeConfig[] = [
 				name: 'html',
 				// type: 'string', // string is default
 				inputType: 'textarea',
-				// value will be set on first init
 				value: ''
 			},
 			{

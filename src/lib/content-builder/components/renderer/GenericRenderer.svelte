@@ -14,8 +14,6 @@
 
 	// so we can have a "flexible spacer"
 	let _defaultClass = 'flex flex-col';
-
-	$: console.log('key', $$props);
 </script>
 
 <div
@@ -25,7 +23,7 @@
 	data-content-builder-type={type}
 	{hidden}
 >
-	{#if html !== undefined}
+	{#if html}
 		<!-- important to wrap inside a div because of flexible spacers -->
 		<div>{@html html}</div>
 	{/if}

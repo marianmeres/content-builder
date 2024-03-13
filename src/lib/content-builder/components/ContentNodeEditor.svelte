@@ -186,6 +186,17 @@
 
 	const _typeExists = (type: string) => _typeConfigMap.has(type);
 
+	const _hasVisibleProps = (
+		props: Map<string, ContentNodeEditorTypeConfigProp> | undefined
+	) => {
+		const entries = [...(props?.entries() || [])];
+		if (!entries.length) return false;
+		for (let [k, p] of entries) {
+			if (p.inputType === 'hidden') return false;
+		}
+		return true;
+	};
+
 	// initialize store if node was not seen yet
 	let _seen: Record<string, string> = {};
 	$: if (node && !_seen[key]) {
@@ -308,9 +319,9 @@
 					disabled
 				/>
 			{/if}
-			{#if typeConfig?.props || typeConfig?.description}
+			{#if _hasVisibleProps(typeConfig?.props) || typeConfig?.description}
 				<Fieldset
-					legend={typeConfig.label}
+					legend={typeConfig?.label}
 					class={{ box: `mb-4 pb-2 ${fieldsetBoxClass}` }}
 				>
 					{#if typeConfig?.description}
@@ -324,7 +335,7 @@
 							{@html typeConfig.description}
 						</div>
 					{/if}
-					{#each typeConfig.props.entries() as [k, v]}
+					{#each typeConfig?.props?.entries() || [] as [k, v]}
 						{@const cmp = _getCmp(k, v.inputType, v.inputProps)}
 						<!-- <pre class="text-xs">{_stringify({ k, v })}</pre> -->
 						<!-- <pre class="text-xs">{_stringify(cmp.props)}</pre> -->

@@ -51,13 +51,17 @@
 		//
 		type_label: 'Content block type',
 		type_desc:
-			'This affects how this content block will be rendered. Be aware that changing the type will reset other object values.',
+			'This will affect how this content block is rendered. Note that changing the type resets the other block values.',
 		//
 		html_label: 'Advanced: custom HTML',
 		html_desc: 'Be carefull. You may break things.',
 		//
 		style_label: 'Advanced: custom CSS',
 		style_desc: 'Be carefull. You may break things.',
+		//
+		hidden_label: 'Hidden',
+		hidden_desc:
+			'If checked, this block including its inner blocks will not be rendered.',
 		//
 		allow_inner_label: 'Allow this block to contain inner blocks',
 		allow_inner_desc:
@@ -168,5 +172,8 @@
 <style lang="scss">
 	:global([data-content-builder-node-highlighted]) {
 		background-color: #fefce8;
+	}
+	:global([data-content-builder-node-hidden]) {
+		opacity: 0.5;
 	}
 </style>

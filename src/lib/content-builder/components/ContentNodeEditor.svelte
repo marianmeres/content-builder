@@ -152,6 +152,11 @@
 	$: $_props = node?.value?.props || {};
 	$: $_allowInnerBlocks = !!node?.value?.allowInnerBlocks;
 
+	// always add "hidden" prop
+	$: if ($_props.hidden === undefined) {
+		$_props.hidden = false;
+	}
+
 	// pick current type config
 	let typeConfig: NormalizedConfig | undefined | null = null;
 	$: if ($_type) typeConfig = _typeConfigMap.get($_type);
@@ -296,6 +301,15 @@
 					/>
 				{/each}
 			{/if}
+
+			<FieldCheckbox
+				label={t('hidden_label')}
+				description={t('hidden_desc')}
+				bind:checked={$_props.hidden}
+				on:change={_save}
+				size={_ifSmall(size, 'sm', 'md')}
+				class={{ description: _ifSmall(size, 'text-xs', 'text-sm') }}
+			/>
 
 			{#if !typeConfig?.allowInnerBlocks?.hidden && _typeExists($_type)}
 				<FieldCheckbox

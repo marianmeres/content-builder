@@ -104,6 +104,7 @@
 				on:pointerenter={() => onHover(n)}
 				on:pointerleave={() => onHoverOut(n)}
 				role="group"
+				data-content-builder-node-hidden={n.value?.props?.hidden ? true : undefined}
 			>
 				<div
 					use:draggable={{

@@ -89,7 +89,9 @@
 	) => i18nKey;
 
 	// read and normalize config
-	$: _typesConfig = [...defaultTypesConfig, ...typesConfig];
+	$: _typesConfig = [...defaultTypesConfig, ...typesConfig].sort((a, b) =>
+		(a.label || a.value).localeCompare(b.label || b.value)
+	);
 	$: _typeConfigMap = _typesConfig.reduce(
 		(m, o) => {
 			m.set(o.value, {

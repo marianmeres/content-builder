@@ -99,9 +99,7 @@
 		} else {
 			store.resetError();
 			const valueData = await createPrompt(acp)(
-				[
-					'Valid JSON is required. You should continue only if you know what you are doing.'
-				].join(' '),
+				['Valid JSON is required. Edit at your own risk.'].join(' '),
 				JSON.stringify(value, null, 2),
 				{
 					promptFieldProps: { type: 'textarea', class: { input: 'font-mono' } },

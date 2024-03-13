@@ -54,10 +54,10 @@
 			'This will affect how this content block is rendered. Note that changing the type resets the other block values.',
 		//
 		html_label: 'Advanced: custom HTML',
-		html_desc: 'Be carefull. You may break things.',
+		html_desc: 'Be careful. You can break things.',
 		//
 		style_label: 'Advanced: custom CSS',
-		style_desc: 'Be carefull. You may break things.',
+		style_desc: 'Be careful. You can break things.',
 		//
 		hidden_label: 'Hidden',
 		hidden_desc:

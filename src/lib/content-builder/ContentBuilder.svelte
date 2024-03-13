@@ -44,7 +44,7 @@
 		node_add: 'Add new content block inside this block',
 		node_duplicate: 'Duplicate this content block',
 		node_edit: 'Edit this content block',
-		drag_to_reorder: 'Drag to move',
+		node_edit_drag: 'Click to edit this content block or drag to move',
 		//
 		label_label: 'Label',
 		label_desc: 'For your internal reference only.',

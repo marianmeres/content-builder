@@ -63,7 +63,7 @@
 			"
 		on:click={async () => onNodeEditRequest(key, value)}
 		type="button"
-		aria-label={t('node_edit')}
+		aria-label={t('node_edit_drag')}
 		use:tooltip
 	>
 		<span class="opacity-75">{value.type}</span>

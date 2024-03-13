@@ -165,6 +165,8 @@
 		return props;
 	};
 
+	const _typeExists = (type: string) => _typeConfigMap.has(type);
+
 	// initialize store if node was not seen yet
 	let _seen: Record<string, string> = {};
 	$: if (node && !_seen[key]) {
@@ -252,18 +254,32 @@
 					{key}
 				</span>
 			</Field>
-			<FieldSelect
-				label={t('type_label')}
-				description={t('type_desc')}
-				bind:value={$_type}
-				class={{
-					input: 'bg-white p-1 text-sm',
-					description: _ifSmall(size, 'text-xs', 'text-sm')
-				}}
-				options={_typesConfig.map((o) => ({ label: o.label || o.value, value: o.value }))}
-				size={_ifSmall(size, 'sm', 'md')}
-				on:change={_save}
-			/>
+			{#if _typeExists($_type)}
+				<FieldSelect
+					label={t('type_label')}
+					description={t('type_desc')}
+					bind:value={$_type}
+					class={{
+						input: 'bg-white p-1 text-sm',
+						description: _ifSmall(size, 'text-xs', 'text-sm')
+					}}
+					options={_typesConfig.map((o) => ({
+						label: o.label || o.value,
+						value: o.value
+					}))}
+					size={_ifSmall(size, 'sm', 'md')}
+					on:change={_save}
+				/>
+			{:else}
+				<Field
+					bind:value={$_type}
+					type="text"
+					label={t('type_label')}
+					size={_ifSmall(size, 'sm', 'md')}
+					class={{ input: 'bg-white p-1 text-sm rounded-r-none' }}
+					disabled
+				/>
+			{/if}
 
 			{#if typeConfig?.props}
 				{#each typeConfig.props.entries() as [k, v]}
@@ -281,7 +297,7 @@
 				{/each}
 			{/if}
 
-			{#if !typeConfig?.allowInnerBlocks?.hidden}
+			{#if !typeConfig?.allowInnerBlocks?.hidden && _typeExists($_type)}
 				<FieldCheckbox
 					label={t('allow_inner_label')}
 					description={t('allow_inner_desc')}

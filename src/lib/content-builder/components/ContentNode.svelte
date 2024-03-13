@@ -144,8 +144,6 @@
 						<div
 							class="flex flex-col justify-center p-0 opacity-40"
 							class:hidden={disabled}
-							aria-label={t('drag_to_reorder')}
-							use:tooltip
 						>
 							{@html iconBsGripVertical({ size: 21 })}
 						</div>

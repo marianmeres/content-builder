@@ -389,7 +389,7 @@
 				bind:checked={$_props.hidden}
 				on:change={_save}
 				size={_ifSmall(size, 'sm', 'md')}
-				class={{ input: 'rounded', description: _ifSmall(size, 'text-xs', 'text-sm') }}
+				class={TYPE_TO_FIELD.checkbox.props.class}
 			/>
 
 			{#if !typeConfig?.allowInnerBlocks?.hidden && _typeExists($_type)}
@@ -399,7 +399,7 @@
 					bind:checked={$_allowInnerBlocks}
 					on:change={_save}
 					size={_ifSmall(size, 'sm', 'md')}
-					class={{ input: 'rounded', description: _ifSmall(size, 'text-xs', 'text-sm') }}
+					class={TYPE_TO_FIELD.checkbox.props.class}
 				/>
 			{/if}
 

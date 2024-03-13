@@ -17,6 +17,7 @@
 	} from '@marianmeres/stuic';
 	import { Tree } from '@marianmeres/tree';
 	import { derived, writable } from 'svelte/store';
+	import { twMerge } from 'tailwind-merge';
 	import ContentBuilder from '../ContentBuilder.svelte';
 	import type { ContentBuilderStore } from '../content-builder.js';
 	import type {
@@ -25,6 +26,7 @@
 		ContentNodeEditorTypeConfigProp
 	} from '../types.js';
 	import { defaultTypesConfig } from './editor/default-types-config.js';
+	import { createEventDispatcher } from 'svelte';
 
 	interface NormalizedConfig {
 		label: string;
@@ -40,7 +42,7 @@
 </script>
 
 <script lang="ts">
-	import { twMerge } from 'tailwind-merge';
+	const dispatch = createEventDispatcher();
 
 	let _class = '';
 	export { _class as class };
@@ -106,11 +108,13 @@
 	export function close() {
 		key = '';
 		afterClose?.();
+		dispatch('closed');
 	}
 
 	export async function openRawEditor() {
 		node && (await builder?.defaultOnNodeEdit?.(key, $value));
 		afterEdit?.();
+		dispatch('edited');
 	}
 
 	export async function remove() {
@@ -124,6 +128,7 @@
 			store.remove(key);
 		}
 		afterRemove?.();
+		dispatch('removed');
 	}
 
 	// prepare stores
@@ -185,7 +190,12 @@
 		$_props = _applyConfigProps($_props, true); // hard
 	}
 
-	const _save = () => node && store.edit(key, $value);
+	const _save = () => {
+		if (node) {
+			store.edit(key, $value);
+			dispatch('saved');
+		}
+	};
 
 	// intentionally as fn (so the "t" fn will be available when passing the ContentBuilder's exposed t)
 	const TYPE_TO_LABEL = (): Record<string, Record<string, string>> => ({

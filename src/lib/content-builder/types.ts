@@ -9,11 +9,11 @@ export interface ContentBuilderNodeValue {
 export interface ContentNodeEditorTypeConfigProp {
 	name: string;
 	type?: 'string' | 'number' | 'boolean' | 'date';
-	inputType?: 'text' | 'textarea' | 'select' | 'radio' | 'hidden';
-	inputOptions?: (string | { label: string; value: string })[]; // for selects, radios
+	inputType?: 'text' | 'textarea' | 'select' | 'radio' | 'hidden' | 'checkbox';
 	value: any;
 	inputProps?: Record<string, any> & {
 		placeholder?: string;
+		options?: (string | { label: string; value: string; description?: string })[]; // for selects, radios
 	};
 }
 

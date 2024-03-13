@@ -36,8 +36,8 @@
 					resolve(true);
 				}, 300);
 			});
-		},
-		logger: clog
+		}
+		// logger: clog
 	});
 
 	const acp = createAlertConfirmPromptStore();
@@ -157,6 +157,43 @@
 						value: true,
 						hidden: true
 					}
+				},
+				{
+					label: 'With options',
+					value: 'with_opts',
+					description: 'Hey ho',
+					props: [
+						{
+							name: 'hey',
+							inputType: 'radio',
+							value: 'bar',
+							inputProps: {
+								label: 'Foo',
+								options: [
+									{ value: 'foo', label: 'Foo', description: 'Some' },
+									{ value: 'bar', label: 'Bar' },
+									{ value: 'baz', label: 'Baz' }
+								],
+								description: 'Lets go'
+							}
+						}
+					]
+				},
+				{
+					label: 'With checkbox',
+					value: 'with_check',
+					description: 'Lets go',
+					props: [
+						{
+							name: 'checkcheck',
+							inputType: 'checkbox',
+							value: true,
+							inputProps: {
+								label: 'Foo',
+								description: 'Lets go'
+							}
+						}
+					]
 				}
 			]}
 		/>

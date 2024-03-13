@@ -6,7 +6,13 @@ export default {
 	],
 	darkMode: 'class',
 	theme: {
-		extend: {}
+		extend: {
+			colors: {
+				// example of what to do
+				// 'stuic-primary': 'rgb(var(--stuic-primary) / <alpha-value>)',
+				// 'stuic-on-primary': 'rgb(var(--stuic-on-primary) / <alpha-value>)'
+			}
+		}
 	},
 	plugins: []
 };

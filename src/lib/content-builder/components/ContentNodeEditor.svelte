@@ -10,7 +10,9 @@
 		Button,
 		Field,
 		FieldCheckbox,
+		FieldRadios,
 		FieldSelect,
+		Fieldset,
 		createAlertConfirmPromptStore,
 		createConfirm,
 		createNotificationsStore,
@@ -44,8 +46,6 @@
 </script>
 
 <script lang="ts">
-	import { Fieldset } from '@marianmeres/stuic';
-
 	const dispatch = createEventDispatcher();
 
 	let _class = '';
@@ -53,6 +53,7 @@
 	export let buttonBoxClass = '';
 	export let fieldsetBoxClass = '';
 	export let fieldsetDescriptionClass = '';
+	export let selectInputClass = '';
 
 	// prettier-ignore
 	export let notifications: ReturnType<typeof createNotificationsStore> | undefined = undefined;
@@ -176,7 +177,9 @@
 	$: if ($_type) typeConfig = _typeConfigMap.get($_type);
 
 	const _applyConfigProps = (props: Record<string, any>, hard = false) => {
-		props = { ...props };
+		// always reset "style" as it is considered as special case - it is often used as hidden prop
+		props = { ...props, style: undefined };
+
 		typeConfig?.props.forEach((v, k) => {
 			if (hard) props[k] = v?.value;
 			else if (props[k] === undefined) props[k] = v?.value;
@@ -246,14 +249,45 @@
 			component: Field,
 			props: {
 				..._commonInputProps,
-				type: 'text'
+				type: 'text',
+				class: {
+					input: 'bg-white p-1 text-sm font-mono placeholder:text-sm'
+				}
 			}
 		},
 		textarea: {
 			component: Field,
 			props: {
 				..._commonInputProps,
-				type: 'textarea'
+				type: 'textarea',
+				class: {
+					input: 'bg-white p-1 text-sm font-mono placeholder:text-sm'
+				}
+			}
+		},
+		select: {
+			component: FieldSelect,
+			props: {
+				class: {
+					input: 'bg-white p-1 text-sm',
+					description: _ifSmall(size, 'text-xs', 'text-sm')
+				}
+			}
+		},
+		radio: {
+			component: FieldRadios,
+			props: {
+				class: {
+					description: _ifSmall(size, 'text-xs', 'text-sm')
+				}
+			}
+		},
+		checkbox: {
+			component: FieldCheckbox,
+			props: {
+				class: {
+					description: _ifSmall(size, 'text-xs', 'text-sm')
+				}
 			}
 		}
 	};
@@ -288,7 +322,7 @@
 					slot="input_after"
 					class="text-xs font-mono px-2 flex items-center opacity-50"
 					use:tooltip
-					aria-label="Internal content block ID"
+					aria-label="Internal block ID"
 				>
 					{key}
 				</span>
@@ -298,10 +332,7 @@
 					label={t('type_label')}
 					description={t('type_desc')}
 					bind:value={$_type}
-					class={{
-						input: 'bg-white p-1 text-sm',
-						description: _ifSmall(size, 'text-xs', 'text-sm')
-					}}
+					class={TYPE_TO_FIELD.select.props.class}
 					options={_typesConfig.map((o) => ({
 						label: o.label || o.value,
 						value: o.value
@@ -315,7 +346,7 @@
 					type="text"
 					label={t('type_label')}
 					size={_ifSmall(size, 'sm', 'md')}
-					class={{ input: 'bg-white p-1 text-sm rounded-r-none' }}
+					class={TYPE_TO_FIELD.text.props.class}
 					disabled
 				/>
 			{/if}
@@ -337,14 +368,13 @@
 					{/if}
 					{#each typeConfig?.props?.entries() || [] as [k, v]}
 						{@const cmp = _getCmp(k, v.inputType, v.inputProps)}
-						<!-- <pre class="text-xs">{_stringify({ k, v })}</pre> -->
-						<!-- <pre class="text-xs">{_stringify(cmp.props)}</pre> -->
-						<!-- @ts-ignore -->
 						<svelte:component
 							this={cmp.component}
 							{...cmp.props || {}}
 							name={k}
 							bind:value={$_props[k]}
+							bind:group={$_props[k]}
+							bind:checked={$_props[k]}
 							on:change={_save}
 							size={_ifSmall(size, 'sm', 'md')}
 							validate
@@ -359,7 +389,7 @@
 				bind:checked={$_props.hidden}
 				on:change={_save}
 				size={_ifSmall(size, 'sm', 'md')}
-				class={{ description: _ifSmall(size, 'text-xs', 'text-sm') }}
+				class={{ input: 'rounded', description: _ifSmall(size, 'text-xs', 'text-sm') }}
 			/>
 
 			{#if !typeConfig?.allowInnerBlocks?.hidden && _typeExists($_type)}
@@ -369,7 +399,7 @@
 					bind:checked={$_allowInnerBlocks}
 					on:change={_save}
 					size={_ifSmall(size, 'sm', 'md')}
-					class={{ description: _ifSmall(size, 'text-xs', 'text-sm') }}
+					class={{ input: 'rounded', description: _ifSmall(size, 'text-xs', 'text-sm') }}
 				/>
 			{/if}
 

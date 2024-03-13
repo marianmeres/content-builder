@@ -96,7 +96,7 @@ export const createContentBuilderStore = (
 			const p = tree.find(parentKey || tree.root!.key);
 			if (p) {
 				value ??= { ...(options.defaultNodeValue || defaultNodeValue) };
-				value.label ||= `${value.type} #${_counter()}`;
+				value.label ||= `block #${_counter()}`;
 				p.appendChild(value);
 				_touch();
 				_save();

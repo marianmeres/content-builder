@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	:root {
+		// example of what to do
+		--stuic-primary: 220 38 38; // red-600
+		--stuic-on-primary: 255 255 255;
+		//
+		--stuic-primary-dark: 220 38 38;
+		--stuic-on-primary-dark: 255 255 255;
+	}
+}

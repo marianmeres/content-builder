@@ -46,9 +46,8 @@
 		node_edit: 'Edit this content block',
 		drag_to_reorder: 'Drag to move',
 		//
-		label_label:
-			'Label <span class="opacity-50">(for your internal reference only)</span>',
-		label_desc: '',
+		label_label: 'Label',
+		label_desc: 'For your internal reference only.',
 		//
 		type_label: 'Content block type',
 		type_desc:

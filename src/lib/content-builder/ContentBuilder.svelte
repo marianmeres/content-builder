@@ -51,7 +51,9 @@
 		//
 		type_label: 'Content block type',
 		type_desc:
-			'This will affect how this content block is rendered. Note that changing the type resets the other block values.',
+			'This will affect how this content block is rendered. Note that changing the type resets the block properties.',
+		//
+		props_fieldset_legend: 'Content block properties',
 		//
 		html_label: 'Advanced: custom HTML',
 		html_desc: 'Be careful. You can break things.',

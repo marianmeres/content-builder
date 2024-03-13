@@ -12,6 +12,9 @@ export interface ContentNodeEditorTypeConfigProp {
 	inputType?: 'text' | 'textarea' | 'select' | 'radio' | 'hidden';
 	inputOptions?: (string | { label: string; value: string })[]; // for selects, radios
 	value: any;
+	inputProps?: Record<string, any> & {
+		placeholder?: string;
+	};
 }
 
 export interface ContentNodeEditorTypeConfig {

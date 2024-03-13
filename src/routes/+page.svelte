@@ -117,6 +117,47 @@
 			{builder}
 			class="bg-gray-200 p-4"
 			t={(...args) => builder?.t.apply(null, args)}
+			fieldsetBoxClass="border-gray-400"
+			typesConfig={[
+				{
+					label: 'Box with video background',
+					value: 'bg_video',
+					props: [
+						{
+							name: 'src',
+							inputType: 'text',
+							value: '',
+							inputProps: {
+								label: 'Video url',
+								required: true,
+								placeholder: 'https://example.com/video.mp4'
+							}
+						},
+						{
+							name: 'videoStyle',
+							inputType: 'text',
+							value: '',
+							inputProps: {
+								label: 'Video element CSS',
+								placeholder: 'filter: sepia(100%);'
+							}
+						},
+						{
+							name: 'overlayColor',
+							inputType: 'text',
+							value: '',
+							inputProps: {
+								label: 'Overlay color',
+								placeholder: 'rgb(0 0 0 / .5)'
+							}
+						}
+					]
+					// allowInnerBlocks: {
+					// 	value: true,
+					// 	hidden: true
+					// }
+				}
+			]}
 		/>
 	</div>
 </div>

@@ -42,11 +42,14 @@
 </script>
 
 <script lang="ts">
+	import { Fieldset } from '@marianmeres/stuic';
+
 	const dispatch = createEventDispatcher();
 
 	let _class = '';
 	export { _class as class };
 	export let buttonBoxClass = '';
+	export let fieldsetBoxClass = '';
 
 	// prettier-ignore
 	export let notifications: ReturnType<typeof createNotificationsStore> | undefined = undefined;
@@ -94,10 +97,6 @@
 
 		return m;
 	}, new Map<string, NormalizedConfig>());
-
-	// node value shape: {
-	//   type: 'default', label: '', props: { html: '', style: '' }, allowInnerBlocks: true
-	// };
 
 	// load current node
 	$: builder?.setHighlightedNodeKey(key || null);
@@ -158,9 +157,7 @@
 	$: $_allowInnerBlocks = !!node?.value?.allowInnerBlocks;
 
 	// always add "hidden" prop
-	$: if ($_props.hidden === undefined) {
-		$_props.hidden = false;
-	}
+	$: if ($_props.hidden === undefined) $_props.hidden = false;
 
 	// pick current type config
 	let typeConfig: NormalizedConfig | undefined | null = null;
@@ -216,7 +213,7 @@
 	// DRY
 	const _commonInputProps = {
 		class: {
-			input: `font-mono bg-white p-1 ${_ifSmall(size, 'text-xs', 'text-sm')}`,
+			input: `font-mono bg-white p-1 ${_ifSmall(size, 'text-xs placeholder:text-xs', 'text-sm placeholder:text-sm')}`,
 			description: _ifSmall(size, 'text-xs', 'text-sm')
 		}
 	};
@@ -238,12 +235,16 @@
 		}
 	};
 
-	const _getCmp = (name: string, inputType: any): { component: any; props: any } => {
+	const _getCmp = (
+		name: string,
+		inputType: any,
+		inputProps?: any
+	): { component: any; props: any } => {
 		let { component, props } = (TYPE_TO_FIELD as any)[inputType] || {
 			component: null,
 			props: {}
 		};
-		props = { ...props, ...(TYPE_TO_LABEL()[name] || {}) };
+		props = { ...(inputProps || {}), ...props, ...(TYPE_TO_LABEL()[name] || {}) };
 		return { component, props };
 	};
 </script>
@@ -297,19 +298,26 @@
 			{/if}
 
 			{#if typeConfig?.props}
-				{#each typeConfig.props.entries() as [k, v]}
-					{@const cmp = _getCmp(k, v.inputType)}
-					<!-- <pre class="text-xs">{_stringify({ k, v })}</pre> -->
-					<!-- @ts-ignore -->
-					<svelte:component
-						this={cmp.component}
-						{...cmp.props || {}}
-						name={k}
-						bind:value={$_props[k]}
-						on:change={_save}
-						size={_ifSmall(size, 'sm', 'md')}
-					/>
-				{/each}
+				<Fieldset
+					legend={t('props_fieldset_legend')}
+					class={{ box: `mb-4 pb-2 ${fieldsetBoxClass}` }}
+				>
+					{#each typeConfig.props.entries() as [k, v]}
+						{@const cmp = _getCmp(k, v.inputType, v.inputProps)}
+						<!-- <pre class="text-xs">{_stringify({ k, v })}</pre> -->
+						<!-- <pre class="text-xs">{_stringify(cmp.props)}</pre> -->
+						<!-- @ts-ignore -->
+						<svelte:component
+							this={cmp.component}
+							{...cmp.props || {}}
+							name={k}
+							bind:value={$_props[k]}
+							on:change={_save}
+							size={_ifSmall(size, 'sm', 'md')}
+							validate
+						/>
+					{/each}
+				</Fieldset>
 			{/if}
 
 			<FieldCheckbox

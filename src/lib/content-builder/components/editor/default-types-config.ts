@@ -12,12 +12,18 @@ export const defaultTypesConfig: ContentNodeEditorTypeConfig[] = [
 				name: 'html',
 				// type: 'string', // string is default
 				inputType: 'textarea',
-				value: ''
+				value: '',
+				inputProps: {
+					placeholder: '<b>Hello, World!</b>'
+				}
 			},
 			{
 				name: 'style',
 				inputType: 'textarea',
-				value: ''
+				value: '',
+				inputProps: {
+					placeholder: 'color: red;'
+				}
 			}
 		],
 		allowInnerBlocks: {

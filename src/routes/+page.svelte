@@ -122,6 +122,7 @@
 				{
 					label: 'Box with video background',
 					value: 'bg_video',
+					description: '',
 					props: [
 						{
 							name: 'src',

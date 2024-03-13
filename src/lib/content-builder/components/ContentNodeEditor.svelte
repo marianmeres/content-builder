@@ -31,6 +31,7 @@
 
 	interface NormalizedConfig {
 		label: string;
+		description?: string;
 		props: Map<string, ContentNodeEditorTypeConfigProp>;
 		allowInnerBlocks: Partial<ContentNodeEditorTypeConfig['allowInnerBlocks']>;
 	}
@@ -51,6 +52,7 @@
 	export { _class as class };
 	export let buttonBoxClass = '';
 	export let fieldsetBoxClass = '';
+	export let fieldsetDescriptionClass = '';
 
 	// prettier-ignore
 	export let notifications: ReturnType<typeof createNotificationsStore> | undefined = undefined;
@@ -91,6 +93,7 @@
 		(m, o) => {
 			m.set(o.value, {
 				label: o.label || o.value,
+				description: o.description,
 				props: (o.props || []).reduce((m2, p) => {
 					m2.set(p.name, p);
 					return m2;
@@ -305,12 +308,22 @@
 					disabled
 				/>
 			{/if}
-
-			{#if typeConfig?.props}
+			{#if typeConfig?.props || typeConfig?.description}
 				<Fieldset
-					legend={t('props_fieldset_legend')}
+					legend={typeConfig.label}
 					class={{ box: `mb-4 pb-2 ${fieldsetBoxClass}` }}
 				>
+					{#if typeConfig?.description}
+						<div
+							class={twMerge(
+								'-mt-2 mb-3 opacity-50',
+								fieldsetDescriptionClass,
+								_ifSmall(size, 'text-xs', 'text-sm')
+							)}
+						>
+							{@html typeConfig.description}
+						</div>
+					{/if}
 					{#each typeConfig.props.entries() as [k, v]}
 						{@const cmp = _getCmp(k, v.inputType, v.inputProps)}
 						<!-- <pre class="text-xs">{_stringify({ k, v })}</pre> -->

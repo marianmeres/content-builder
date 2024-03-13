@@ -20,6 +20,7 @@ export interface ContentNodeEditorTypeConfigProp {
 export interface ContentNodeEditorTypeConfig {
 	value: string;
 	label?: string;
+	description?: string;
 	props?: ContentNodeEditorTypeConfigProp[];
 	allowInnerBlocks?: {
 		value: boolean;

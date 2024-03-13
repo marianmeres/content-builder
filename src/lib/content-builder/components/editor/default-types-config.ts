@@ -33,8 +33,8 @@ export const defaultTypesConfig: ContentNodeEditorTypeConfig[] = [
 		}
 	},
 	{
-		label: 'Flexible space',
-		value: 'flexible_space',
+		label: 'Spacer: flexible vertical space',
+		value: 'spacer_flex',
 		description: "Expands height respecting parent's block available space",
 		props: [
 			{

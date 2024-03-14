@@ -20,14 +20,14 @@
 
 	// $: clog(123, node?.isRoot);
 	const getCmp = (key: string, value: ContentBuilderNodeValue) => {
-		let cmp = typeToComponentMap?.[value.type];
-		if (typeof cmp === 'function') cmp = cmp();
+		let def = typeToComponentMap?.[value.type];
+		if (typeof def === 'function') def = def();
 		return {
-			component: cmp?.component || GenericRenderer,
+			component: def?.component || GenericRenderer,
 			props: {
 				key,
 				type: value.type,
-				...(cmp?.props || {}),
+				...(def?.props || {}),
 				...(value?.props || {})
 			}
 		};

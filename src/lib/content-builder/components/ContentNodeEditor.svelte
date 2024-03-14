@@ -241,7 +241,7 @@
 	// DRY
 	const _commonInputProps = {
 		class: {
-			input: `font-mono bg-white p-1 ${_ifSmall(size, 'text-xs placeholder:text-xs', 'text-sm placeholder:text-sm')}`,
+			input: `font-mono bg-white p-1 ${_ifSmall(size, 'text-sm placeholder:text-sm', 'text-base placeholder:text-base')}`,
 			description: _ifSmall(size, 'text-xs', 'text-sm')
 		}
 	};
@@ -253,7 +253,7 @@
 				..._commonInputProps,
 				type: 'text',
 				class: {
-					input: 'bg-white p-1 text-sm font-mono placeholder:text-sm'
+					input: 'bg-white p-2 font-mono'
 				}
 			}
 		},
@@ -263,7 +263,7 @@
 				..._commonInputProps,
 				type: 'textarea',
 				class: {
-					input: 'bg-white p-1 text-sm font-mono placeholder:text-sm'
+					input: 'bg-white p-2 font-mono'
 				}
 			}
 		},
@@ -271,7 +271,7 @@
 			component: FieldSelect,
 			props: {
 				class: {
-					input: 'bg-white p-1 text-sm',
+					input: 'bg-white p-2',
 					description: _ifSmall(size, 'text-xs', 'text-sm')
 				}
 			}
@@ -317,7 +317,7 @@
 				label={t('label_label')}
 				description={t('label_desc')}
 				size={_ifSmall(size, 'sm', 'md')}
-				class={{ input: 'bg-white p-1 text-sm rounded-r-none' }}
+				class={{ input: 'bg-white p-2 rounded-r-none' }}
 				on:change={_save}
 			>
 				<span

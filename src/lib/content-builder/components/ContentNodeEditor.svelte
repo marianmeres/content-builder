@@ -207,12 +207,18 @@
 	$: if (node && !_seen[key]) {
 		_seen[key] = node.value.type;
 		$_props = _applyConfigProps(node.value.props || {}, false); // defensive
+		if (typeConfig?.allowInnerBlocks?.value !== undefined) {
+			$_allowInnerBlocks = !!typeConfig?.allowInnerBlocks?.value;
+		}
 	}
 
 	// reset/reinitialize props store on type change
 	$: if (node && _seen[key] !== $_type) {
 		_seen[key] = $_type;
 		$_props = _applyConfigProps($_props, true); // hard
+		if (typeConfig?.allowInnerBlocks?.value !== undefined) {
+			$_allowInnerBlocks = !!typeConfig?.allowInnerBlocks?.value;
+		}
 	}
 
 	const _save = () => {
@@ -394,15 +400,19 @@
 				class={TYPE_TO_FIELD.checkbox.props.class}
 			/>
 
-			{#if !typeConfig?.allowInnerBlocks?.hidden && _typeExists($_type)}
-				<FieldCheckbox
-					label={t('allow_inner_label')}
-					description={t('allow_inner_desc')}
-					bind:checked={$_allowInnerBlocks}
-					on:change={_save}
-					size={_ifSmall(size, 'sm', 'md')}
-					class={TYPE_TO_FIELD.checkbox.props.class}
-				/>
+			<!-- {#if !typeConfig?.allowInnerBlocks?.hidden && _typeExists($_type)} -->
+			{#if _typeExists($_type)}
+				<div class:opacity-50={typeConfig?.allowInnerBlocks?.hidden}>
+					<FieldCheckbox
+						label={t('allow_inner_label')}
+						description={t('allow_inner_desc')}
+						bind:checked={$_allowInnerBlocks}
+						on:change={_save}
+						disabled={typeConfig?.allowInnerBlocks?.hidden}
+						size={_ifSmall(size, 'sm', 'md')}
+						class={TYPE_TO_FIELD.checkbox.props.class}
+					/>
+				</div>
 			{/if}
 
 			<!-- <pre class="text-xs">{_stringify($value)}</pre> -->

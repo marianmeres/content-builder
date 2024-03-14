@@ -180,7 +180,7 @@
 					]
 				},
 				{
-					label: 'With checkbox',
+					label: 'With checkbox (no inner)',
 					value: 'with_check',
 					description: 'Lets go',
 					props: [
@@ -193,7 +193,11 @@
 								description: 'Lets go'
 							}
 						}
-					]
+					],
+					allowInnerBlocks: {
+						value: false,
+						hidden: true
+					}
 				}
 			]}
 		/>

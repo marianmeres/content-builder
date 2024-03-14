@@ -10,19 +10,28 @@
 	import GenericRenderer from './components/renderer/GenericRenderer.svelte';
 	import type { ContentBuilderNodeValue } from './types.js';
 
-	export let typeToComponentMap: Record<string, ContentBuilderRendererComponentDef> = {};
+	type ComponentDefFn = () => ContentBuilderRendererComponentDef;
+
+	export let typeToComponentMap: Record<
+		string,
+		ComponentDefFn | ContentBuilderRendererComponentDef
+	> = {};
 	export let node: TreeNode<ContentBuilderNodeValue> | null;
 
 	// $: clog(123, node?.isRoot);
-	const getCmp = (key: string, value: ContentBuilderNodeValue) => ({
-		component: typeToComponentMap?.[value.type]?.component || GenericRenderer,
-		props: {
-			key,
-			type: value.type,
-			...(typeToComponentMap?.[value.type]?.props || {}),
-			...(value?.props || {})
-		}
-	});
+	const getCmp = (key: string, value: ContentBuilderNodeValue) => {
+		let cmp = typeToComponentMap?.[value.type];
+		if (typeof cmp === 'function') cmp = cmp();
+		return {
+			component: cmp?.component || GenericRenderer,
+			props: {
+				key,
+				type: value.type,
+				...(cmp?.props || {}),
+				...(value?.props || {})
+			}
+		};
+	};
 </script>
 
 {#if node?.isRoot}

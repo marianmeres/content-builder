@@ -58,6 +58,7 @@
 			isDraggedOver
 			// logger: createClog('droppable')
 		}}
+		class="transition-all"
 		class:bg-black={$isDraggedOver === id}
 		class:h-2={$isDraggedOver !== id && index === -1}
 		class:h-3={$isDraggedOver !== id && index !== -1}

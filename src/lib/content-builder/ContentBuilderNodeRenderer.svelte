@@ -9,6 +9,7 @@
 	import type { TreeNode } from '@marianmeres/tree';
 	import GenericRenderer from './components/renderer/GenericRenderer.svelte';
 	import type { ContentBuilderNodeValue } from './types.js';
+	import { defaultTypesConfig } from './components/editor/default-types-config.js';
 
 	type ComponentDefFn = () => ContentBuilderRendererComponentDef;
 
@@ -18,17 +19,24 @@
 	> = {};
 	export let node: TreeNode<ContentBuilderNodeValue> | null;
 
+	const _defaultTypes: Record<string, true> = Object.values(defaultTypesConfig).reduce(
+		(m, o) => ({ ...m, [o.value]: true }),
+		{}
+	);
+
 	// $: clog(123, node?.isRoot);
 	const getCmp = (key: string, value: ContentBuilderNodeValue) => {
 		let def = typeToComponentMap?.[value.type];
 		if (typeof def === 'function') def = def();
+		console.log(44444, def, _defaultTypes);
 		return {
 			component: def?.component || GenericRenderer,
 			props: {
 				key,
 				type: value.type,
 				...(def?.props || {}),
-				...(value?.props || {})
+				...(value?.props || {}),
+				__typeIsValid: !!(def || _defaultTypes[value.type])
 			}
 		};
 	};

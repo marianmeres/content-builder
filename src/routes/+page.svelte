@@ -213,6 +213,9 @@
 <Notifications posY="bottom" {notifications} bind:this={globalNotifsCmp} />
 
 <style lang="scss">
+	:global([data-content-builder-node-type-invalid]) {
+		outline: 2px red dashed;
+	}
 	// :global([data-content-builder-node-highlighted]) {
 	// background-color: #ffc !important;
 	// }

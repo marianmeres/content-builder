@@ -57,14 +57,14 @@
 	{#if showNodeId}
 		<span class="text-xs font-mono opacity-50 mr-2">{key}</span>
 	{/if}
+	<!-- use:tooltip -->
 	<button
 		class="
-				text-xs font-mono rounded-full p-1 px-2 bg-gray-100
-			"
+			text-xs font-mono rounded-full p-1 px-2 bg-gray-100
+		"
 		on:click={async () => onNodeEditRequest(key, value)}
 		type="button"
 		aria-label={t('node_edit_drag')}
-		use:tooltip
 	>
 		<span class="opacity-75">{value.type}</span>
 	</button>

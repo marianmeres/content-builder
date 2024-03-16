@@ -174,6 +174,7 @@
 		background-color: #fefce8;
 	}
 	:global([data-content-builder-node-hidden]) {
-		opacity: 0.5;
+		// opacity: 0.5;
+		@apply text-red-500;
 	}
 </style>

@@ -11,12 +11,12 @@
 		createAlertConfirmPromptStore,
 		createConfirm,
 		draggable,
-		droppable,
-		tooltip
+		droppable
 	} from '@marianmeres/stuic';
 	import { Tree, type TreeNode } from '@marianmeres/tree';
 	import { createEventDispatcher } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { fade } from 'svelte/transition';
 	import { twMerge } from 'tailwind-merge';
 	import type { ContentBuilderTheme } from '../ContentBuilder.svelte';
 	import type { ContentBuilderStore } from '../content-builder.js';
@@ -56,6 +56,7 @@
 		$hoveredKeys = [...$hoveredKeys.filter((k) => k !== n.key)];
 	};
 
+	const isDraggingEnabled = writable(false);
 	const isDragged = writable<string | null>(null);
 	const isDraggedOver = writable<string | null>(null);
 	const tree = new Tree<ContentBuilderNodeValue>();
@@ -99,7 +100,9 @@
 					isHovered ? 'border-solid' : 'border-dashed',
 					isHovered ? theme?.li_hi || 'border-black' : theme?.li_low || 'border-gray-300',
 					`border-[3px] rounded-t rounded-l relative block`,
-					$isDraggedOver === id && ' border-black border-solid'
+					$isDraggedOver === id && ' border-black border-solid',
+					// somewhat slowe duration looks better here as it doesn't blink so aggressively
+					'transition-all	duration-500'
 				)}
 				on:pointerenter={() => onHover(n)}
 				on:pointerleave={() => onHoverOut(n)}
@@ -108,15 +111,13 @@
 			>
 				<div
 					use:draggable={{
-						enabled: !disabled && isHovered,
+						enabled: $isDraggingEnabled && !disabled && isHovered,
 						id,
 						payload: { source: n.key },
 						effectAllowed: 'move',
 						isDragged
 						// logger: createClog('draggable')
 					}}
-					class:cursor-grab={!disabled && $isDragged !== id}
-					class:cursor-grabbing={!disabled && $isDragged === id}
 					class:bg-gray-300={!disabled && $isDragged === id}
 					use:droppable={{
 						// this droppable only handles first child
@@ -142,9 +143,14 @@
 						: undefined}
 				>
 					<div class="flex w-full">
+						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div
 							class="flex flex-col justify-center p-0 opacity-40"
 							class:hidden={disabled}
+							class:cursor-grab={!disabled && $isDragged !== id}
+							class:cursor-grabbing={!disabled && $isDragged === id}
+							on:mousedown={() => ($isDraggingEnabled = true)}
+							on:mouseup={() => ($isDraggingEnabled = false)}
 						>
 							{@html iconBsGripVertical({ size: 21 })}
 						</div>
@@ -181,7 +187,7 @@
 					{/if}
 				</div>
 
-				{#if !disabled}
+				{#if !disabled && isHovered}
 					<div
 						class={twMerge(`
 						absolute leading-none
@@ -189,8 +195,9 @@
 						bg-black
 						${theme?.hover_control?.box || ''}
 						rounded-b
+						transition-all
 					`)}
-						hidden={!isHovered}
+						transition:fade
 					>
 						<div class="flex items-center h-full">
 							<ControlButton

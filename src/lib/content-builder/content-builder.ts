@@ -1,7 +1,10 @@
+import { createClog } from '@marianmeres/clog';
 import { createDerivedStore, createStore, type StoreReadable } from '@marianmeres/store';
 import { Tree, TreeNode, type TreeNodeDTO } from '@marianmeres/tree';
 import { get as storeGet } from 'svelte/store';
 import type { ContentBuilderNodeValue } from './types.js';
+
+const clog = createClog('content-builder');
 
 const defaultNodeValue: ContentBuilderNodeValue = {
 	type: 'default',

@@ -13,7 +13,10 @@ export interface ContentNodeEditorTypeConfigProp {
 	value: any;
 	inputProps?: Record<string, any> & {
 		placeholder?: string;
-		options?: (string | { label: string; value: string; description?: string })[]; // for selects, radios
+		options?: (
+			| string
+			| { label: string; value: string; description?: string; optgroup?: string }
+		)[]; // for selects, radios
 	};
 }
 
@@ -21,6 +24,7 @@ export interface ContentNodeEditorTypeConfig {
 	value: string;
 	label?: string;
 	description?: string;
+	optgroup?: string;
 	props?: ContentNodeEditorTypeConfigProp[];
 	allowInnerBlocks?: {
 		value: boolean;

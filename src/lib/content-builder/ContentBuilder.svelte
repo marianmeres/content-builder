@@ -41,9 +41,9 @@
 	export let i18n: Record<string, string> = {
 		empty: 'Click here to append first content block',
 		node_remove: 'Remove this content block',
-		node_remove_confirm_title: 'Are you sure?',
+		node_remove_confirm_title: 'Are you sure to delete <b>"{{label}}"</b>?',
 		node_remove_confirm: [
-			'This operation removes the selected content block and all its inner blocks (if any).',
+			'This operation removes the content block <b>"{{label}}"</b> and all its inner blocks (if any).',
 			'There is no undo. Continue?'
 		].join(' '),
 		node_add: 'Add new content block inside this block',
@@ -56,7 +56,7 @@
 		//
 		type_label: 'Content block type',
 		type_desc:
-			'This will affect how this content block is rendered. Note that changing the type resets the block properties.',
+			'This will affect how this content block is rendered. Note that changing the type resets all current block properties.',
 		//
 		props_fieldset_legend: 'Content block properties',
 		//

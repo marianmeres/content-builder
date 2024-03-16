@@ -30,6 +30,7 @@
 	} from '../types.js';
 	import { defaultTypesConfig } from './editor/default-types-config.js';
 	import { createEventDispatcher } from 'svelte';
+	import { replaceMap } from '../utils.js';
 
 	interface NormalizedConfig {
 		label: string;
@@ -132,13 +133,17 @@
 	}
 
 	export async function remove() {
+		const _t = (k: string) => {
+			const html = replaceMap(t(k), { '{{label}}': node?.value.label });
+			return { html };
+		};
 		const c = acp
 			? createConfirm(acp, {
-					title: t('node_remove_confirm_title'),
+					title: _t('node_remove_confirm_title'),
 					variant: 'warn'
 				})
 			: confirm;
-		if (await c(t('node_remove_confirm'))) {
+		if (await c(_t('node_remove_confirm') as any)) {
 			store.remove(key);
 		}
 		afterRemove?.();
@@ -166,10 +171,12 @@
 	);
 
 	// fill/reset stores based on current node
-	$: $_type = node?.value?.type || 'default';
-	$: $_label = node?.value?.label || '';
-	$: $_props = node?.value?.props || {};
-	$: $_allowInnerBlocks = !!node?.value?.allowInnerBlocks;
+	$: if (node) {
+		$_type = node.value?.type || 'default';
+		$_label = node.value?.label || '';
+		$_props = node.value?.props || {};
+		$_allowInnerBlocks = !!node.value?.allowInnerBlocks;
+	}
 
 	// always add "hidden" prop
 	$: if ($_props.hidden === undefined) $_props.hidden = false;
@@ -179,13 +186,16 @@
 	$: if ($_type) typeConfig = _typeConfigMap.get($_type);
 
 	const _applyConfigProps = (props: Record<string, any>, hard = false) => {
-		// always reset "style" as it is considered as special case - it is often used as hidden prop
+		// always reset "style" as it is considered a special case - it is often used as hidden prop
 		props = { ...props, style: undefined };
+		if (hard) props = {};
 
 		typeConfig?.props.forEach((v, k) => {
-			if (hard) props[k] = v?.value;
-			else if (props[k] === undefined) props[k] = v?.value;
+			// if (hard) props[k] = v?.value;
+			// else if (props[k] === undefined) props[k] = v?.value;
+			if (!hard && props[k] === undefined) props[k] = v?.value;
 		});
+
 		return props;
 	};
 
@@ -343,7 +353,8 @@
 					class={TYPE_TO_FIELD.select.props.class}
 					options={_typesConfig.map((o) => ({
 						label: o.label || o.value,
-						value: o.value
+						value: o.value,
+						optgroup: o.optgroup || ''
 					}))}
 					size={_ifSmall(size, 'sm', 'md')}
 					on:change={_save}

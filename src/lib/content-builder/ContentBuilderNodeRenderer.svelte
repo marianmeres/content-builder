@@ -28,7 +28,6 @@
 	const getCmp = (key: string, value: ContentBuilderNodeValue) => {
 		let def = typeToComponentMap?.[value.type];
 		if (typeof def === 'function') def = def();
-		console.log(44444, def, _defaultTypes);
 		return {
 			component: def?.component || GenericRenderer,
 			props: {

@@ -25,6 +25,7 @@
 	import ContentNodeValue from './ContentNodeValue.svelte';
 	import ControlButton from './ControlButton.svelte';
 	import Debug from './Debug.svelte';
+	import { replaceMap } from '../utils.js';
 
 	const clog = createClog('ContentNode');
 	const dispatch = createEventDispatcher();
@@ -231,13 +232,17 @@
 								ariaLabel={t('node_remove')}
 								class="rounded-br"
 								on:click={async () => {
+									const _t = (k) => {
+										const html = replaceMap(t(k), { '{{label}}': n.value.label });
+										return { html };
+									};
 									const c = acp
 										? createConfirm(acp, {
-												title: t('node_remove_confirm_title'),
+												title: _t('node_remove_confirm_title'),
 												variant: 'warn'
 											})
 										: confirm;
-									if (await c(t('node_remove_confirm'))) {
+									if (await c(_t('node_remove_confirm'))) {
 										store.remove(n.key);
 									}
 								}}

@@ -34,10 +34,10 @@
 				setTimeout(() => {
 					storage()?.setItem('dump', dump);
 					resolve(true);
-				}, 300);
+				}, 1_000);
 			});
-		}
-		// logger: clog
+		},
+		logger: clog
 	});
 
 	const acp = createAlertConfirmPromptStore();
@@ -163,15 +163,16 @@
 					label: 'With options',
 					value: 'with_opts',
 					description: 'Hey ho',
+					optgroup: 'Foo',
 					props: [
 						{
 							name: 'hey',
-							inputType: 'radio',
+							inputType: 'select',
 							value: 'bar',
 							inputProps: {
 								label: 'Foo',
 								options: [
-									{ value: 'foo', label: 'Foo', description: 'Some' },
+									{ value: 'foo', label: 'Foo', description: 'Some', optgroup: 'Bar' },
 									{ value: 'bar', label: 'Bar' },
 									{ value: 'baz', label: 'Baz' }
 								],
@@ -211,7 +212,7 @@
 	notificationsPositionConfig={globalNotifsCmp?.getPositionConfig() || {}}
 />
 
-<Notifications posY="bottom" {notifications} bind:this={globalNotifsCmp} />
+<Notifications {notifications} bind:this={globalNotifsCmp} />
 
 <style lang="scss">
 	:global([data-content-builder-node-type-invalid]) {

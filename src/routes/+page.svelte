@@ -72,6 +72,7 @@
 				{store}
 				{disabled}
 				{acp}
+				{notifications}
 				debug={false}
 				onNodeEditRequest={async (k, v) => {
 					// key = k;

@@ -1,11 +1,16 @@
 <script lang="ts" context="module">
 	import { createClog } from '@marianmeres/clog';
-	import { createPrompt, type createAlertConfirmPromptStore } from '@marianmeres/stuic';
+	import {
+		createPrompt,
+		type createAlertConfirmPromptStore,
+		createNotificationsStore
+	} from '@marianmeres/stuic';
 	import { Tree } from '@marianmeres/tree';
 	import { twMerge } from 'tailwind-merge';
 	import ContentNode from './components/ContentNode.svelte';
 	import type { ContentBuilderStore } from './content-builder.js';
 	import type { ContentBuilderNodeValue } from './types.js';
+	import { iconBsCloudDownload } from '@marianmeres/icons-fns';
 
 	export interface ContentBuilderTheme {
 		li: string;
@@ -72,8 +77,10 @@
 
 	export let theme: Partial<ContentBuilderTheme> = {};
 
-	export let acp: ReturnType<typeof createAlertConfirmPromptStore> | undefined =
-		undefined;
+	// prettier-ignore
+	export let notifications: ReturnType<typeof createNotificationsStore> | undefined = undefined;
+	// prettier-ignore
+	export let acp: ReturnType<typeof createAlertConfirmPromptStore> | undefined = undefined;
 
 	export const t = (i18nKey: string, params: any = {}) => {
 		return i18n?.[i18nKey] ?? i18nKey;
@@ -98,22 +105,34 @@
 			return false;
 		} else {
 			store.resetError();
-			const valueData = await createPrompt(acp)(
-				['Valid JSON is required. Edit at your own risk.'].join(' '),
-				JSON.stringify(value, null, 2),
-				{
-					promptFieldProps: { type: 'textarea', class: { input: 'font-mono' } },
-					iconFn: false,
-					title: {
-						html: [
-							`<span class="flex items-center justify-between">`,
-							`<span>Advanced content block data editor</span>`,
-							`<code class="text-xs opacity-50 font-normal">${key}</code>`,
-							`</span>`
-						].join(' ')
+
+			const valueData = await new Promise((resolve) => {
+				acp?.prompt(
+					(_value: string) => {
+						try {
+							_value = JSON.parse(_value);
+							acp!.close();
+							resolve(_value);
+						} catch (e) {
+							acp!.setHeadValue(_value);
+							(notifications || console).error("Invalid JSON data. Can't continue...");
+						}
+					},
+					{
+						value: JSON.stringify(value, null, 2),
+						promptFieldProps: { type: 'textarea', class: { input: 'font-mono' } },
+						iconFn: false,
+						title: {
+							html: [
+								`<span class="flex items-center justify-between">`,
+								`<span>Advanced content block data editor</span>`,
+								`<code class="text-xs opacity-50 font-normal">${key}</code>`,
+								`</span>`
+							].join(' ')
+						}
 					}
-				}
-			);
+				);
+			});
 
 			// @ts-ignore
 			valueData && store.edit(key, valueData);

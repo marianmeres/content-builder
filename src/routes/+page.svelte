@@ -185,6 +185,7 @@
 					label: 'With checkbox (no inner)',
 					value: 'with_check',
 					description: 'Lets go',
+					optgroup: 'Foo',
 					props: [
 						{
 							name: 'checkcheck',

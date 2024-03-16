@@ -91,10 +91,9 @@
 
 	// read and normalize config
 	$: _typesConfig = [...defaultTypesConfig, ...typesConfig].sort((a, b) => {
-		if (a.optgroup || b.optgroup) {
-			return (a.optgroup || '').localeCompare(b.optgroup || '');
-		}
-		return (a.label || a.value).localeCompare(b.label || b.value);
+		const aVal = [a.optgroup || '', a.label || a.value].join(' ');
+		const bVal = [b.optgroup || '', b.label || b.value].join(' ');
+		return aVal.localeCompare(bVal);
 	});
 	$: _typeConfigMap = _typesConfig.reduce(
 		(m, o) => {

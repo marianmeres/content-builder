@@ -31,27 +31,5 @@ export const defaultTypesConfig: ContentNodeEditorTypeConfig[] = [
 			value: true,
 			hidden: false
 		}
-	},
-	{
-		label: 'Flexible vertical space',
-		value: 'spacer_flex',
-		description: 'Fills the height respecting parents block available space',
-		optgroup: 'Spacer',
-		props: [
-			{
-				name: 'html',
-				inputType: 'hidden',
-				value: ''
-			},
-			{
-				name: 'style',
-				inputType: 'hidden',
-				value: 'flex-grow: 1;'
-			}
-		],
-		allowInnerBlocks: {
-			value: false,
-			hidden: true
-		}
 	}
 ];

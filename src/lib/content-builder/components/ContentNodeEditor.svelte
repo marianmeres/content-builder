@@ -188,9 +188,9 @@
 	$: if ($_type) typeConfig = _typeConfigMap.get($_type);
 
 	const _applyConfigProps = (props: Record<string, any>, hard = false) => {
-		// always reset "style" as it is considered a special case - it is often used as hidden prop
-		props = { ...props, style: undefined };
-		if (hard) props = {};
+		// if hard - we are switching type
+		// else - we are initializing
+		props = hard ? {} : { ...props };
 
 		typeConfig?.props.forEach((v, k) => {
 			// if (hard) props[k] = v?.value;

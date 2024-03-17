@@ -119,6 +119,7 @@
 						}
 					},
 					{
+						content: 'Valid JSON is required. Edit at your own risk.',
 						value: JSON.stringify(value, null, 2),
 						promptFieldProps: { type: 'textarea', class: { input: 'font-mono' } },
 						iconFn: false,

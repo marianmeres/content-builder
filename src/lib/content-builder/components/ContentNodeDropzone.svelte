@@ -5,7 +5,9 @@
 	import { writable } from 'svelte/store';
 	import type { ContentBuilderStore } from '../content-builder.js';
 	import type { ContentBuilderNodeValue } from '../types.js';
+	import { createEventDispatcher } from 'svelte';
 
+	const dispatch = createEventDispatcher();
 	const clog = createClog('Dropzone');
 
 	export let index: number = 0;
@@ -54,6 +56,7 @@
 
 				// console.log('final', src?.siblingIndex, targetIndex);
 				store.move(sourceKey, targetKey, targetIndex);
+				dispatch('dropped');
 			},
 			isDraggedOver
 			// logger: createClog('droppable')

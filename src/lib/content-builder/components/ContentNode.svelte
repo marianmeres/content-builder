@@ -90,6 +90,7 @@
 						{store}
 						index={-1}
 						disabled={disabled || !_isDropzoneEnabled(node)}
+						on:dropped={() => ($isDraggingEnabled = false)}
 					/>
 				</li>
 			{/if}
@@ -136,6 +137,8 @@
 							if (src && target && src !== target) {
 								store.move(sourceKey, targetKey);
 							}
+
+							$isDraggingEnabled = false;
 						},
 						isDraggedOver
 					}}
@@ -268,6 +271,7 @@
 					{store}
 					{index}
 					disabled={disabled || !_isDropzoneEnabled(node)}
+					on:dropped={() => ($isDraggingEnabled = false)}
 				/>
 			</li>
 		{/each}

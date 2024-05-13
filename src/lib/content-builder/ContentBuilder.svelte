@@ -37,14 +37,14 @@
 	export let store: ContentBuilderStore;
 
 	export let i18n: Record<string, string> = {
-		empty: 'Click here to append first content block',
+		empty: 'Click here to append the first content block',
 		node_remove: 'Remove this content block',
 		node_remove_confirm_title: 'Are you sure to delete <b>"{{label}}"</b>?',
 		node_remove_confirm: [
 			'This operation removes the content block <b>"{{label}}"</b> and all its inner blocks (if any).',
 			'There is no undo. Continue?'
 		].join(' '),
-		node_add: 'Add new content block inside this block',
+		node_add: 'Add a new content block inside this block',
 		node_duplicate: 'Duplicate this content block',
 		node_edit: 'Edit this content block',
 		node_edit_drag: 'Click to edit this content block or drag to move',

@@ -85,6 +85,8 @@
 	export let buttonsClass = '';
 	export let buttonsVariant = '';
 
+	export let tooltipGetAppendChildTarget: undefined | (() => HTMLElement) = undefined;
+
 	export let size: 'sm' | 'md' = 'md';
 
 	export let t: (i18nKey: string, params?: any) => string = (
@@ -344,8 +346,10 @@
 				<span
 					slot="input_after"
 					class="text-xs font-mono px-2 flex items-center opacity-50"
-					use:tooltip
-					aria-label="Internal block ID"
+					use:tooltip={{
+						content: 'Internal block ID',
+						getAppendChildTarget: tooltipGetAppendChildTarget
+					}}
 				>
 					{key}
 				</span>
@@ -442,7 +446,12 @@
 				>
 					<div class="flex-1">
 						{#if showButtonEdit}
-							<span use:tooltip aria-label="Advanced raw data editor">
+							<span
+								use:tooltip={{
+									content: 'Advanced raw data editor',
+									getAppendChildTarget: tooltipGetAppendChildTarget
+								}}
+							>
 								<Button
 									size={_ifSmall(size, 'sm', 'md')}
 									data-content-editor-edit
@@ -455,7 +464,12 @@
 							</span>
 						{/if}
 						{#if showButtonRemove}
-							<span use:tooltip aria-label="Delete this content block">
+							<span
+								use:tooltip={{
+									content: 'Delete this content block',
+									getAppendChildTarget: tooltipGetAppendChildTarget
+								}}
+							>
 								<Button
 									size={_ifSmall(size, 'sm', 'md')}
 									data-content-editor-remove
@@ -468,7 +482,12 @@
 							</span>
 						{/if}
 						{#if showButtonClose}
-							<span use:tooltip aria-label="Close this editor">
+							<span
+								use:tooltip={{
+									content: 'Close this editor',
+									getAppendChildTarget: tooltipGetAppendChildTarget
+								}}
+							>
 								<Button
 									size={_ifSmall(size, 'sm', 'md')}
 									data-content-editor-close

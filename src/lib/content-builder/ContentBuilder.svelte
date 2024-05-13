@@ -1,16 +1,14 @@
 <script lang="ts" context="module">
 	import { createClog } from '@marianmeres/clog';
 	import {
-		createPrompt,
-		type createAlertConfirmPromptStore,
-		createNotificationsStore
+		createNotificationsStore,
+		type createAlertConfirmPromptStore
 	} from '@marianmeres/stuic';
 	import { Tree } from '@marianmeres/tree';
 	import { twMerge } from 'tailwind-merge';
 	import ContentNode from './components/ContentNode.svelte';
 	import type { ContentBuilderStore } from './content-builder.js';
 	import type { ContentBuilderNodeValue } from './types.js';
-	import { iconBsCloudDownload } from '@marianmeres/icons-fns';
 
 	export interface ContentBuilderTheme {
 		li: string;

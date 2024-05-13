@@ -82,6 +82,9 @@
 	export let showButtonRemove = true;
 	export let showIsSaving = true;
 
+	export let buttonsClass = '';
+	export let buttonsVariant = '';
+
 	export let size: 'sm' | 'md' = 'md';
 
 	export let t: (i18nKey: string, params?: any) => string = (
@@ -444,6 +447,8 @@
 									size={_ifSmall(size, 'sm', 'md')}
 									data-content-editor-edit
 									on:click={openRawEditor}
+									class={buttonsClass}
+									variant={buttonsVariant}
 								>
 									{@html iconHeroMiniCodeBracket({ size: 16 })}
 								</Button>
@@ -455,6 +460,8 @@
 									size={_ifSmall(size, 'sm', 'md')}
 									data-content-editor-remove
 									on:click={remove}
+									class={buttonsClass}
+									variant={buttonsVariant}
 								>
 									{@html iconHeroMiniTrash({ size: 16 })}
 								</Button>
@@ -466,6 +473,8 @@
 									size={_ifSmall(size, 'sm', 'md')}
 									data-content-editor-close
 									on:click={close}
+									class={buttonsClass}
+									variant={buttonsVariant}
 								>
 									{@html iconHeroMiniXMark({ size: 16 })}
 								</Button>

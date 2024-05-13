@@ -119,6 +119,7 @@
 			class="bg-gray-200 p-4"
 			t={(...args) => builder?.t.apply(null, args)}
 			fieldsetBoxClass="border-gray-400"
+			size="sm"
 			typesConfig={[
 				{
 					label: 'Box with video background',

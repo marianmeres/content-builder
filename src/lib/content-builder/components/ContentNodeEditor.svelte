@@ -276,7 +276,8 @@
 				..._commonInputProps,
 				type: 'text',
 				class: {
-					input: 'bg-white p-2 font-mono'
+					input: 'bg-white p-2 font-mono',
+					description: _ifSmall(size, 'text-xs', 'text-sm')
 				}
 			}
 		},
@@ -286,7 +287,8 @@
 				..._commonInputProps,
 				type: 'textarea',
 				class: {
-					input: 'bg-white p-2 font-mono'
+					input: 'bg-white p-2 font-mono',
+					description: _ifSmall(size, 'text-xs', 'text-sm')
 				}
 			}
 		},
@@ -342,7 +344,10 @@
 				label={t('label_label')}
 				description={t('label_desc')}
 				size={_ifSmall(size, 'sm', 'md')}
-				class={{ input: 'bg-white p-2 rounded-r-none' }}
+				class={{
+					input: twMerge(TYPE_TO_FIELD.text.props.class.input, 'rounded-r-none'),
+					description: TYPE_TO_FIELD.text.props.class.description
+				}}
 				on:change={_save}
 			>
 				<span

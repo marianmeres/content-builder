@@ -329,11 +329,13 @@
 		props = { ...(inputProps || {}), ...props, ...(TYPE_TO_LABEL()[name] || {}) };
 		return { component, props };
 	};
+
+	let boundaryRoot: HTMLElement;
 </script>
 
 {#if node}
 	{#key node.key}
-		<form class={_class}>
+		<form class={_class} bind:this={boundaryRoot}>
 			<Field
 				bind:value={$_label}
 				type="text"
@@ -348,7 +350,8 @@
 					class="text-xs font-mono px-2 flex items-center opacity-50"
 					use:tooltip={{
 						content: 'Internal block ID',
-						getAppendChildTarget: tooltipGetAppendChildTarget
+						getAppendChildTarget: tooltipGetAppendChildTarget,
+						boundaryRoot
 					}}
 				>
 					{key}
@@ -449,7 +452,8 @@
 							<span
 								use:tooltip={{
 									content: 'Advanced raw data editor',
-									getAppendChildTarget: tooltipGetAppendChildTarget
+									getAppendChildTarget: tooltipGetAppendChildTarget,
+									boundaryRoot
 								}}
 							>
 								<Button
@@ -467,7 +471,8 @@
 							<span
 								use:tooltip={{
 									content: 'Delete this content block',
-									getAppendChildTarget: tooltipGetAppendChildTarget
+									getAppendChildTarget: tooltipGetAppendChildTarget,
+									boundaryRoot
 								}}
 							>
 								<Button
@@ -485,7 +490,8 @@
 							<span
 								use:tooltip={{
 									content: 'Close this editor',
-									getAppendChildTarget: tooltipGetAppendChildTarget
+									getAppendChildTarget: tooltipGetAppendChildTarget,
+									boundaryRoot
 								}}
 							>
 								<Button

@@ -49,6 +49,9 @@
 <script lang="ts">
 	const dispatch = createEventDispatcher();
 
+	export let debug = false;
+	const _log = (...args: any[]) => debug && clog(...args);
+
 	let _class = '';
 	export { _class as class };
 	export let buttonBoxClass = '';
@@ -70,6 +73,7 @@
 	export let typesConfig: ContentNodeEditorTypeConfig[] = [];
 
 	export function setKey(_key: string) {
+		_log('setKey', _key);
 		key = _key;
 	}
 
@@ -109,7 +113,10 @@
 					m2.set(p.name, p);
 					return m2;
 				}, new Map<string, ContentNodeEditorTypeConfigProp>()),
-				allowInnerBlocks: o?.allowInnerBlocks || {}
+				allowInnerBlocks: o?.allowInnerBlocks || {
+					value: true,
+					hidden: false
+				}
 			});
 
 			return m;
@@ -161,7 +168,7 @@
 	const _type = writable('');
 	const _label = writable('');
 	const _props = writable<Record<string, any>>({});
-	const _allowInnerBlocks = writable(true);
+	const _allowInnerBlocks = writable<boolean>(true);
 
 	// final node "value"
 	const value = derived(
@@ -179,6 +186,7 @@
 
 	// fill/reset stores based on current node
 	$: if (node) {
+		_log(`NODE`, node.value);
 		$_type = node.value?.type || 'default';
 		$_label = node.value?.label || '';
 		$_props = node.value?.props || {};
@@ -222,24 +230,32 @@
 	// initialize store if node was not seen yet
 	let _seen: Record<string, string> = {};
 	$: if (node && !_seen[key]) {
+		_log(`NOT SEEN`, node.value);
 		_seen[key] = node.value.type;
 		$_props = _applyConfigProps(node.value.props || {}, false); // defensive
-		if (typeConfig?.allowInnerBlocks?.value !== undefined) {
-			$_allowInnerBlocks = !!typeConfig?.allowInnerBlocks?.value;
-		}
+		// $_allowInnerBlocks = !!node.value.allowInnerBlocks;
+		// if (typeConfig?.allowInnerBlocks?.value !== undefined) {
+		// $_allowInnerBlocks = !!typeConfig?.allowInnerBlocks?.value;
+		// }
 	}
 
 	// reset/reinitialize props store on type change
 	$: if (node && _seen[key] !== $_type) {
+		_log(`SWITCHING TYPE FROM '${node.value.type}' TO '${_type}' FOR ${key}`);
 		_seen[key] = $_type;
 		$_props = _applyConfigProps($_props, true); // hard
 		if (typeConfig?.allowInnerBlocks?.value !== undefined) {
+			_log(
+				`Setting 'allowInnerBlocks' from config to `,
+				!!typeConfig?.allowInnerBlocks?.value
+			);
 			$_allowInnerBlocks = !!typeConfig?.allowInnerBlocks?.value;
 		}
 	}
 
 	const _save = () => {
 		if (node) {
+			_log(`SAVING '${key}'s VALUE TO '`, $value);
 			store.edit(key, $value);
 			dispatch('saved');
 		}

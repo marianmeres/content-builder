@@ -34,10 +34,10 @@
 				setTimeout(() => {
 					storage()?.setItem('dump', dump);
 					resolve(true);
-				}, 1_000);
+				}, 300);
 			});
-		},
-		logger: clog
+		}
+		// logger: clog
 	});
 
 	const acp = createAlertConfirmPromptStore();
@@ -120,6 +120,7 @@
 			t={(...args) => builder?.t.apply(null, args)}
 			fieldsetBoxClass="border-gray-400"
 			size="sm"
+			debug
 			typesConfig={[
 				{
 					label: 'Box with video background',

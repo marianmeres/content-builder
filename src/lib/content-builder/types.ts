@@ -27,9 +27,9 @@ export interface ContentNodeEditorTypeConfig {
 	optgroup?: string;
 	props?: ContentNodeEditorTypeConfigProp[];
 	allowInnerBlocks?: {
-		// what is the actual configured boolean value
+		// what is the actual configured 'allowInnerBlocks' boolean value
 		value: boolean;
-		// whether it is allowed to edit the value in editor
+		// whether it is allowed to edit the 'allowInnerBlocks' value in editor
 		hidden: boolean;
 	};
 }

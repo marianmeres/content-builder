@@ -28,7 +28,7 @@
 		ContentNodeEditorTypeConfig,
 		ContentNodeEditorTypeConfigProp
 	} from '../types.js';
-	import { defaultTypesConfig } from './editor/default-types-config.js';
+	import { defaultTypeConfig } from './editor/default-type-config.js';
 	import { createEventDispatcher } from 'svelte';
 	import { replaceMap } from '../utils.js';
 
@@ -98,8 +98,22 @@
 		params?: any
 	) => i18nKey;
 
+	const _ensureStyleProp = (existing: ContentNodeEditorTypeConfigProp[]) => {
+		let out = [...existing];
+		if (existing.findIndex((e) => e.name === 'style') < 0)
+			out.push({
+				name: 'style',
+				inputType: 'textarea',
+				value: '',
+				inputProps: {
+					placeholder: 'color: red;'
+				}
+			});
+		return out;
+	};
+
 	// read and normalize config
-	$: _typesConfig = [...defaultTypesConfig, ...typesConfig].sort((a, b) => {
+	$: _typesConfig = [...[defaultTypeConfig], ...typesConfig].sort((a, b) => {
 		const aVal = [a.optgroup || '', a.label || a.value].join(' ');
 		const bVal = [b.optgroup || '', b.label || b.value].join(' ');
 		return aVal.localeCompare(bVal);
@@ -109,7 +123,7 @@
 			m.set(o.value, {
 				label: o.label || o.value,
 				description: o.description,
-				props: (o.props || []).reduce((m2, p) => {
+				props: _ensureStyleProp(o.props || []).reduce((m2, p) => {
 					m2.set(p.name, p);
 					return m2;
 				}, new Map<string, ContentNodeEditorTypeConfigProp>()),

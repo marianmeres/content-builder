@@ -12,20 +12,22 @@
 	export let __typeIsValid: boolean = false;
 
 	// so we can have a "flexible spacer"
-	let _defaultClass = 'flex flex-col';
+	let _defaultClass = 'flex flex-col relative';
 </script>
 
-<div
-	{style}
-	class={twMerge(_defaultClass, _class, hidden ? 'hidden' : '')}
-	id={key}
-	data-content-builder-type={type}
-	{hidden}
-	data-content-builder-node-type-invalid={__typeIsValid ? undefined : type}
->
-	<!-- important to wrap inside a div because of flexible spacers -->
-	{#if html}
-		<div>{@html html}</div>
-	{/if}
-	<slot />
-</div>
+{#key key}
+	<div
+		{style}
+		class={twMerge(_defaultClass, _class, hidden ? 'hidden' : '')}
+		id={key}
+		data-content-builder-type={type}
+		{hidden}
+		data-content-builder-node-type-invalid={__typeIsValid ? undefined : type}
+	>
+		<!-- important to wrap inside a div because of flexible spacers -->
+		{#if html}
+			<div>{@html html}</div>
+		{/if}
+		<slot />
+	</div>
+{/key}

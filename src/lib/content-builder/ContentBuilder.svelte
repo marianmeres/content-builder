@@ -58,10 +58,10 @@
 		//
 		props_fieldset_legend: 'Content block properties',
 		//
-		html_label: 'Advanced: custom HTML',
+		html_label: 'Block inner HTML (advanced)',
 		html_desc: 'Be careful. You can break things.',
 		//
-		style_label: 'Advanced: custom CSS',
+		style_label: 'Block CSS (advanced)',
 		style_desc: 'Note that some content blocks may ignore this value.',
 		//
 		hidden_label: 'Hidden',

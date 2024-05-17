@@ -19,6 +19,7 @@
 		tooltip
 	} from '@marianmeres/stuic';
 	import { Tree } from '@marianmeres/tree';
+	import { createEventDispatcher } from 'svelte';
 	import { derived, writable } from 'svelte/store';
 	import { twMerge } from 'tailwind-merge';
 	import ContentBuilder from '../ContentBuilder.svelte';
@@ -28,9 +29,8 @@
 		ContentNodeEditorTypeConfig,
 		ContentNodeEditorTypeConfigProp
 	} from '../types.js';
-	import { defaultTypeConfig } from './editor/default-type-config.js';
-	import { createEventDispatcher } from 'svelte';
 	import { replaceMap } from '../utils.js';
+	import { defaultTypeConfig } from './editor/default-type-config.js';
 
 	interface NormalizedConfig {
 		label: string;
@@ -184,6 +184,8 @@
 	const _props = writable<Record<string, any>>({});
 	const _allowInnerBlocks = writable<boolean>(true);
 
+	// _type.subscribe((v) => _log('_type change', v));
+
 	// final node "value"
 	const value = derived(
 		[_type, _label, _props, _allowInnerBlocks],
@@ -219,11 +221,18 @@
 		// else - we are initializing
 		props = hard ? {} : { ...props };
 
+		const _setProp = (k: string, v: any) => {
+			_log(`setting prop ${k}=${JSON.stringify(v)}`);
+			props[k] = v;
+		};
+
 		typeConfig?.props.forEach((v, k) => {
-			// if (hard) props[k] = v?.value;
-			// else if (props[k] === undefined) props[k] = v?.value;
-			if (!hard && props[k] === undefined) props[k] = v?.value;
+			// _log(`typeConfig prop.${k} = ${JSON.stringify(v.value)}`);
+			if (props[k] === undefined) _setProp(k, v?.value);
+			// if (!hard && props[k] === undefined) props[k] = v?.value;
 		});
+
+		_log('going to apply config props:', props);
 
 		return props;
 	};
@@ -255,7 +264,7 @@
 
 	// reset/reinitialize props store on type change
 	$: if (node && _seen[key] !== $_type) {
-		_log(`SWITCHING TYPE FROM '${node.value.type}' TO '${_type}' FOR ${key}`);
+		_log(`SWITCHING TYPE FROM '${node.value.type}' TO '${$_type}' FOR ${key}`);
 		_seen[key] = $_type;
 		$_props = _applyConfigProps($_props, true); // hard
 		if (typeConfig?.allowInnerBlocks?.value !== undefined) {
@@ -359,6 +368,7 @@
 			props: {}
 		};
 		props = { ...(inputProps || {}), ...props, ...(TYPE_TO_LABEL()[name] || {}) };
+		// _log(name, props);
 		return { component, props };
 	};
 

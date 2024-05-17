@@ -7,16 +7,16 @@
 		createAlertConfirmPromptStore,
 		createNotificationsStore
 	} from '@marianmeres/stuic';
-	import {
-		ContentBuilder,
-		createContentBuilderStore,
-		type ContentBuilderNodeValue,
-		ContentNodeEditor
-	} from '../lib/index.js';
+	import { Tree } from '@marianmeres/tree';
 	import ContentBuilderNodeRenderer, {
 		type ContentBuilderRendererComponentDef
 	} from '../lib/content-builder/ContentBuilderNodeRenderer.svelte';
-	import { Tree } from '@marianmeres/tree';
+	import {
+		ContentBuilder,
+		ContentNodeEditor,
+		createContentBuilderStore,
+		type ContentBuilderNodeValue
+	} from '../lib/index.js';
 	import Foo from './_components/Foo.svelte';
 
 	const clog = createClog('+page');
@@ -170,7 +170,7 @@
 						{
 							name: 'hey',
 							inputType: 'select',
-							value: 'bar',
+							value: 'baz',
 							inputProps: {
 								label: 'Foo',
 								options: [
@@ -178,6 +178,15 @@
 									{ value: 'bar', label: 'Bar' },
 									{ value: 'baz', label: 'Baz' }
 								],
+								description: 'Lets go'
+							}
+						},
+						{
+							name: 'some',
+							inputType: 'text',
+							value: 'default value',
+							inputProps: {
+								label: 'Foo',
 								description: 'Lets go'
 							}
 						}

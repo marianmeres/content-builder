@@ -64,6 +64,10 @@
 		style_label: 'Block CSS (advanced)',
 		style_desc: 'Note that some content blocks may ignore this value.',
 		//
+		class_label: 'Block classes (advanced)',
+		class_desc: 'Note that some content blocks may ignore this value.',
+
+		//
 		hidden_label: 'Hidden',
 		hidden_desc:
 			'If checked, this block including its inner blocks will not be rendered.',

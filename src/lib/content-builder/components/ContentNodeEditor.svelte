@@ -98,9 +98,11 @@
 		params?: any
 	) => i18nKey;
 
-	const _ensureStyleProp = (existing: ContentNodeEditorTypeConfigProp[]) => {
+	export let allowClassProp = true;
+
+	const _ensureDefaultProps = (existing: ContentNodeEditorTypeConfigProp[]) => {
 		let out = [...existing];
-		if (existing.findIndex((e) => e.name === 'style') < 0)
+		if (existing.findIndex((e) => e.name === 'style') < 0) {
 			out.push({
 				name: 'style',
 				inputType: 'textarea',
@@ -109,6 +111,17 @@
 					placeholder: 'color: red;'
 				}
 			});
+		}
+		if (allowClassProp && existing.findIndex((e) => e.name === 'class') < 0) {
+			out.push({
+				name: 'class',
+				inputType: 'textarea',
+				value: '',
+				inputProps: {
+					placeholder: 'text-red-500'
+				}
+			});
+		}
 		return out;
 	};
 
@@ -123,7 +136,7 @@
 			m.set(o.value, {
 				label: o.label || o.value,
 				description: o.description,
-				props: _ensureStyleProp(o.props || []).reduce((m2, p) => {
+				props: _ensureDefaultProps(o.props || []).reduce((m2, p) => {
 					m2.set(p.name, p);
 					return m2;
 				}, new Map<string, ContentNodeEditorTypeConfigProp>()),
@@ -215,6 +228,7 @@
 	// pick current type config
 	let typeConfig: NormalizedConfig | undefined | null = null;
 	$: if ($_type) typeConfig = _typeConfigMap.get($_type);
+	$: _log('typeConfig', typeConfig);
 
 	const _applyConfigProps = (props: Record<string, any>, hard = false) => {
 		// if hard - we are switching type
@@ -293,6 +307,10 @@
 		style: {
 			label: t('style_label'),
 			description: t('style_desc')
+		},
+		class: {
+			label: t('class_label'),
+			description: t('class_desc')
 		}
 	});
 
@@ -326,7 +344,7 @@
 				..._commonInputProps,
 				type: 'textarea',
 				class: {
-					input: 'bg-white p-2 font-mono',
+					input: 'bg-white p-2 font-mono min-h-0',
 					description: _ifSmall(size, 'text-xs', 'text-sm')
 				}
 			}
@@ -368,6 +386,10 @@
 			props: {}
 		};
 		props = { ...(inputProps || {}), ...props, ...(TYPE_TO_LABEL()[name] || {}) };
+
+		// if textarea, and rows undefined, use 1
+		props.rows ??= 1;
+
 		// _log(name, props);
 		return { component, props };
 	};

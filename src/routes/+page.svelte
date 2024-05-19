@@ -139,11 +139,12 @@
 						},
 						{
 							name: 'videoStyle',
-							inputType: 'text',
+							inputType: 'textarea',
 							value: '',
 							inputProps: {
 								label: 'Video element CSS',
-								placeholder: 'filter: sepia(100%);'
+								placeholder: 'filter: sepia(100%);',
+								rows: 1
 							}
 						},
 						{

@@ -2,7 +2,6 @@
 	import { createClog } from '@marianmeres/clog';
 	import type { ContentBuilderStore } from '../content-builder.js';
 	import type { ContentBuilderNodeValue } from '../types.js';
-	import { tooltip } from '@marianmeres/stuic';
 
 	const clog = createClog('ContentNodeValue');
 

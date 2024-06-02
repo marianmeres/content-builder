@@ -38,7 +38,7 @@
 			<div>{@html html}</div>
 		{/if} -->
 		{#if _thcSegments.length}
-			{#each _thcSegments as thc}
+			{#each _thcSegments.flat(Infinity) as thc}
 				<div><Thc {thc} forceAsHtml /></div>
 			{/each}
 		{/if}

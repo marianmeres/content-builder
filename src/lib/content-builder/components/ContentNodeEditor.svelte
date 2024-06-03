@@ -1,11 +1,9 @@
 <script lang="ts" context="module">
 	import { createClog } from '@marianmeres/clog';
-	import {
-		iconHeroMiniArrowPath,
-		iconHeroMiniCodeBracket,
-		iconHeroMiniTrash,
-		iconHeroMiniXMark
-	} from '@marianmeres/icons-fns';
+	import { iconHeroMiniArrowPath } from '@marianmeres/icons-fns/heroicons/mini/iconHeroMiniArrowPath.js';
+	import { iconHeroMiniCodeBracket } from '@marianmeres/icons-fns/heroicons/mini/iconHeroMiniCodeBracket.js';
+	import { iconHeroMiniTrash } from '@marianmeres/icons-fns/heroicons/mini/iconHeroMiniTrash.js';
+	import { iconHeroMiniXMark } from '@marianmeres/icons-fns/heroicons/mini/iconHeroMiniXMark.js';
 	import {
 		Button,
 		Field,

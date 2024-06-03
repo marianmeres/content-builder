@@ -53,9 +53,9 @@
 	"type": "module",
 	"dependencies": {
 		"@marianmeres/clog": "^1.0.1",
-		"@marianmeres/icons-fns": "^3.1.1",
+		"@marianmeres/icons-fns": "^4.0.4",
 		"@marianmeres/store": "^1.5.0",
-		"@marianmeres/stuic": "^1.101.0",
+		"@marianmeres/stuic": "^1.105.0",
 		"@marianmeres/tree": "^1.0.2",
 		"clsx": "^2.1.0",
 		"esm-env": "^1.0.0",

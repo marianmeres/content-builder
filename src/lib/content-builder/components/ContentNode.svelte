@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { createClog } from '@marianmeres/clog';
-	import {
-		iconBsGripVertical,
-		iconFeatherCopy,
-		iconFeatherEdit,
-		iconFeatherFolderPlus,
-		iconFeatherTrash2
-	} from '@marianmeres/icons-fns';
+	import { iconBsGripVertical } from '@marianmeres/icons-fns/bootstrap/iconBsGripVertical.js';
+	import { iconFeatherCopy } from '@marianmeres/icons-fns/feather/iconFeatherCopy.js';
+	import { iconFeatherEdit } from '@marianmeres/icons-fns/feather/iconFeatherEdit.js';
+	import { iconFeatherFolderPlus } from '@marianmeres/icons-fns/feather/iconFeatherFolderPlus.js';
+	import { iconFeatherTrash2 } from '@marianmeres/icons-fns/feather/iconFeatherTrash2.js';
 	import {
 		createAlertConfirmPromptStore,
 		createConfirm,
@@ -21,11 +19,11 @@
 	import type { ContentBuilderTheme } from '../ContentBuilder.svelte';
 	import type { ContentBuilderStore } from '../content-builder.js';
 	import type { ContentBuilderNodeValue } from '../types.js';
+	import { replaceMap } from '../utils.js';
 	import ContentNodeDropzone from './ContentNodeDropzone.svelte';
 	import ContentNodeValue from './ContentNodeValue.svelte';
 	import ControlButton from './ControlButton.svelte';
 	import Debug from './Debug.svelte';
-	import { replaceMap } from '../utils.js';
 
 	const clog = createClog('ContentNode');
 	const dispatch = createEventDispatcher();
